@@ -8,9 +8,15 @@ class Race(models.Model):
     distance_km = models.FloatField()
     course = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.race_name
+
 class RaceCat(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     category = models.CharField(max_length=1)
+    
+    def __str__(self):
+        return f'[{self.category}] {self.race}'
 
 class RaceResult(models.Model):
     race_cat = models.ForeignKey(RaceCat, on_delete=models.CASCADE)
@@ -21,3 +27,6 @@ class RaceResult(models.Model):
     gap_to_first_ms = models.IntegerField()
     zp_rank_before = models.FloatField()
     zp_rank_event = models.FloatField()
+
+    def __str__(self):
+        return f'[{self.position}][{self.race_cat.category}] {self.racer_name}'
