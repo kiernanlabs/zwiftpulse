@@ -1,0 +1,77 @@
+Category,Prime,Split,Rider,Time (ms),Position
+A,Fastest time,1_Innsbruck Sprint Forward,Matthew Ladd,25270,1
+A,First over line,1_Innsbruck Sprint Forward,Matthew Ladd,0,1
+A,Fastest time,2_Innsbruck Sprint Forward,Matthew Ladd,25330,1
+A,First over line,2_Innsbruck Sprint Forward,Matthew Ladd,0,1
+B,Fastest time,1_Innsbruck Sprint Forward,Alexandre Magnie,24549,1
+B,Fastest time,1_Innsbruck Sprint Forward,J. M.,25036,2
+B,Fastest time,1_Innsbruck Sprint Forward,Matthias Packeiser (HCH.CC),25297,3
+B,Fastest time,1_Innsbruck Sprint Forward,Knox Whipple,25359,4
+B,Fastest time,1_Innsbruck Sprint Forward,Erik Dam,25379,5
+B,Fastest time,1_Innsbruck Sprint Forward,Patric Burger,29270,6
+B,First over line,1_Innsbruck Sprint Forward,Alexandre Magnie,0,1
+B,First over line,1_Innsbruck Sprint Forward,J. M.,387,2
+B,First over line,1_Innsbruck Sprint Forward,Erik Dam,403,3
+B,First over line,1_Innsbruck Sprint Forward,Knox Whipple,605,4
+B,First over line,1_Innsbruck Sprint Forward,Matthias Packeiser (HCH.CC),762,5
+B,First over line,1_Innsbruck Sprint Forward,Patric Burger,80000,6
+B,Fastest time,2_Innsbruck Sprint Forward,Alexandre Magnie,25999,1
+B,Fastest time,2_Innsbruck Sprint Forward,Matthias Packeiser (HCH.CC),26298,2
+B,Fastest time,2_Innsbruck Sprint Forward,Erik Dam,26399,3
+B,Fastest time,2_Innsbruck Sprint Forward,Knox Whipple,26990,4
+B,Fastest time,2_Innsbruck Sprint Forward,J. M.,27217,5
+B,Fastest time,2_Innsbruck Sprint Forward,Patric Burger,30604,6
+B,First over line,2_Innsbruck Sprint Forward,Alexandre Magnie,0,1
+B,First over line,2_Innsbruck Sprint Forward,Erik Dam,104,2
+B,First over line,2_Innsbruck Sprint Forward,Matthias Packeiser (HCH.CC),426,3
+B,First over line,2_Innsbruck Sprint Forward,Knox Whipple,785,4
+B,First over line,2_Innsbruck Sprint Forward,J. M.,1040,5
+B,First over line,2_Innsbruck Sprint Forward,Patric Burger,186000,6
+C,Fastest time,1_Innsbruck Sprint Forward,Michael Scotti,24269,1
+C,Fastest time,1_Innsbruck Sprint Forward,Keevin Griffith,24990,2
+C,Fastest time,1_Innsbruck Sprint Forward,Jürgen Malucha,25533,3
+C,Fastest time,1_Innsbruck Sprint Forward,Terry Belanger,25665,4
+C,Fastest time,1_Innsbruck Sprint Forward,Sean Campbell,26309,5
+C,Fastest time,1_Innsbruck Sprint Forward,Graeme Hutchison (WKG BLACK),26611,6
+C,Fastest time,1_Innsbruck Sprint Forward,Jerry Du,26862,7
+C,Fastest time,1_Innsbruck Sprint Forward,Hans Whipple,28834,8
+C,First over line,1_Innsbruck Sprint Forward,Graeme Hutchison (WKG BLACK),0,1
+C,First over line,1_Innsbruck Sprint Forward,Terry Belanger,7370,2
+C,First over line,1_Innsbruck Sprint Forward,Keevin Griffith,7568,3
+C,First over line,1_Innsbruck Sprint Forward,Jürgen Malucha,8746,4
+C,First over line,1_Innsbruck Sprint Forward,Jerry Du,13492,5
+C,First over line,1_Innsbruck Sprint Forward,Sean Campbell,14820,6
+C,First over line,1_Innsbruck Sprint Forward,Hans Whipple,30953,7
+C,First over line,1_Innsbruck Sprint Forward,Michael Scotti,71000,8
+C,Fastest time,2_Innsbruck Sprint Forward,Keevin Griffith,25850,1
+C,Fastest time,2_Innsbruck Sprint Forward,Jürgen Malucha,25867,2
+C,Fastest time,2_Innsbruck Sprint Forward,Graeme Hutchison (WKG BLACK),26328,3
+C,Fastest time,2_Innsbruck Sprint Forward,Terry Belanger,26565,4
+C,Fastest time,2_Innsbruck Sprint Forward,Jerry Du,27990,5
+C,Fastest time,2_Innsbruck Sprint Forward,Hans Whipple,28260,6
+C,Fastest time,2_Innsbruck Sprint Forward,Sean Campbell,28409,7
+C,Fastest time,2_Innsbruck Sprint Forward,Michael Scotti,29579,8
+C,First over line,2_Innsbruck Sprint Forward,Terry Belanger,0,1
+C,First over line,2_Innsbruck Sprint Forward,Graeme Hutchison (WKG BLACK),287,2
+C,First over line,2_Innsbruck Sprint Forward,Jürgen Malucha,423,3
+C,First over line,2_Innsbruck Sprint Forward,Keevin Griffith,582,4
+C,First over line,2_Innsbruck Sprint Forward,Sean Campbell,61000,5
+C,First over line,2_Innsbruck Sprint Forward,Jerry Du,61000,6
+C,First over line,2_Innsbruck Sprint Forward,Michael Scotti,95000,7
+C,First over line,2_Innsbruck Sprint Forward,Hans Whipple,98000,8
+D,Fastest time,1_Innsbruck Sprint Forward,Les B (Kites),28719,1
+D,Fastest time,1_Innsbruck Sprint Forward,Will Albright,29968,2
+D,Fastest time,1_Innsbruck Sprint Forward,Kevin Velik,30314,3
+D,Fastest time,1_Innsbruck Sprint Forward,Nirvan Tyagi,31817,4
+D,First over line,1_Innsbruck Sprint Forward,Les B (Kites),0,1
+D,First over line,1_Innsbruck Sprint Forward,Kevin Velik,6839,2
+D,First over line,1_Innsbruck Sprint Forward,Will Albright,12101,3
+D,First over line,1_Innsbruck Sprint Forward,Nirvan Tyagi,57710,4
+D,Fastest time,2_Innsbruck Sprint Forward,Will Albright,26427,1
+D,Fastest time,2_Innsbruck Sprint Forward,Les B (Kites),30599,2
+D,Fastest time,2_Innsbruck Sprint Forward,Kevin Velik,32728,3
+D,Fastest time,2_Innsbruck Sprint Forward,Nirvan Tyagi,34886,4
+D,First over line,2_Innsbruck Sprint Forward,Les B (Kites),0,1
+D,First over line,2_Innsbruck Sprint Forward,Kevin Velik,22983,2
+D,First over line,2_Innsbruck Sprint Forward,Nirvan Tyagi,112000,3
+D,First over line,2_Innsbruck Sprint Forward,Will Albright,117000,4

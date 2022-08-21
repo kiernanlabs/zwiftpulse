@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from racereport.models import Race, RaceCat, RaceResult
 from datetime import datetime
 import csv
+import glob
 import os.path
 import pytz
 
@@ -18,7 +19,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for path in options['paths']:
-            self.import_finish_file(path)
+            # find all finishes.csv files in directory
+            finish_file_paths = glob.glob(f'{path}/*/finishes.csv')
+            print(f'{len(finish_file_paths)} files found for importing')
+            
+            for finish_file_path in finish_file_paths:
+                self.import_finish_file(finish_file_path)
             
     def import_finish_file(self, path):
         with open(path) as file:
