@@ -1,15 +1,14 @@
-from statistics import mode
-from unicodedata import category
 from django.db import models
 
 class Race(models.Model):
-    event_time = models.DateTimeField()
-    race_name = models.CharField(max_length=200)
-    distance_km = models.FloatField()
-    course = models.CharField(max_length=200)
+    event_id = models.IntegerField()
+    event_datetime = models.DateTimeField()
+    event_name = models.CharField(max_length=200)
+    # distance_km = models.FloatField()
+    # course = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.race_name
+        return self.event_name
 
 class RaceCat(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
@@ -24,7 +23,6 @@ class RaceResult(models.Model):
     team = models.CharField(max_length=200)
     position = models.IntegerField()
     time_ms = models.IntegerField()
-    gap_to_first_ms = models.IntegerField()
     zp_rank_before = models.FloatField()
     zp_rank_event = models.FloatField()
 
