@@ -34,4 +34,16 @@ class ImportRaceTestCase(TestCase):
         race_B = race_result_B[0].race_cat.race
 
         self.assertEqual(race_A.event_id, race_B.event_id)
+    
+    def test_race_cat_podium_full(self):
+        call_command('load_racereports', '/home/joey32/AntHill/zwiftpulse/racereport/sample_result')
+        race = Race.objects.get(event_id=3054484)
+        race_cat_B = RaceCat.objects.get(race=race, category='B')
+        self.assertIsNotNone(race_cat_B.podium)
+    
+    def test_race_cat_podium_only_one(self):
+        call_command('load_racereports', '/home/joey32/AntHill/zwiftpulse/racereport/sample_result')
+        race = Race.objects.get(event_id=3054484)
+        race_cat_A = RaceCat.objects.get(race=race, category='A')
+        self.assertIsNotNone(race_cat_A.podium)
 

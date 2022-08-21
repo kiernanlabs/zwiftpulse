@@ -3,9 +3,11 @@ from racereport.models import Race, RaceCat, RaceResult
 from datetime import datetime
 import csv
 import glob
+import logging
 import os.path
 import pytz
 
+logger = logging.getLogger('main')
 
 class Command(BaseCommand):
     help = 'imports scraped files into the database'
@@ -21,7 +23,7 @@ class Command(BaseCommand):
         for path in options['paths']:
             # find all finishes.csv files in directory
             finish_file_paths = glob.glob(f'{path}/*/finishes.csv')
-            print(f'{len(finish_file_paths)} files found for importing')
+            logger.info(f'{len(finish_file_paths)} files found for importing')
             
             for finish_file_path in finish_file_paths:
                 self.import_finish_file(finish_file_path)
@@ -32,15 +34,18 @@ class Command(BaseCommand):
             next(reader) # header
             first_row = next(reader)
             event_datetime = datetime.fromtimestamp(int(first_row[1]), pytz.timezone("US/Eastern"))
+            event_name = self.extract_race_name(path)
+            event_id = first_row[0]
+            logger.info(f'--{event_name}: {event_id}')
             race = Race.objects.get_or_create(
-                event_id=first_row[0],
-                defaults={'event_datetime': event_datetime, 'event_name': self.extract_race_name(path)}
+                event_id=event_id,
+                defaults={'event_datetime': event_datetime, 'event_name': event_name}
             )[0]
             
             file.seek(0) # back to top
             next(reader) # skip header
             for row in reader:
-                print(f'--parsing row:{row}')
+                logger.debug(f'--parsing row:{row}')
                 self.import_race_result(race, row)
 
     def extract_race_name(self, path):

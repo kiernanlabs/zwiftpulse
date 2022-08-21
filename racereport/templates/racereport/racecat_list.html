@@ -1,0 +1,16 @@
+{% extends "racereport/base.html" %}
+
+{% block content %}
+    <h2>
+        All Races
+    </h2>
+    {% for race_cat in racecat_list %}
+        <article>
+            <strong>{{ race_cat }}</strong>
+            <ul>
+                <li><a href="https://zwiftpower.com/events.php?zid={{ race_cat.event_id }}">zwiftpower link</a></li>
+            </ul>
+            {% include "racereport/racecat_podium_table.html" %}
+        </article>
+    {% endfor %}
+{% endblock content %}

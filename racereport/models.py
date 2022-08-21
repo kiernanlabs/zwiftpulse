@@ -13,9 +13,22 @@ class Race(models.Model):
 class RaceCat(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     category = models.CharField(max_length=1)
+
+    @property
+    def podium(self):
+        return RaceResult.objects.filter(race_cat=self, position__lte=3)
+
+    @property
+    def event_id(self):
+        return self.race.event_id
     
     def __str__(self):
         return f'[{self.category}] {self.race}'
+
+class RaceCatManager(models.Manager):
+    def top5races(self):
+        # Need to filter down to top races per category
+        pass
 
 class RaceResult(models.Model):
     race_cat = models.ForeignKey(RaceCat, on_delete=models.CASCADE)
