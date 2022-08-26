@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import Count, Min
+
 
 class Race(models.Model):
     event_id = models.IntegerField()
@@ -10,7 +12,18 @@ class Race(models.Model):
     def __str__(self):
         return self.event_name
 
+class RaceCatManager(models.Manager):
+    def top5races(self, start_time):
+        racecats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(race_time__gte=start_time).order_by('racer_count')
+        return racecats[0:5]
+    
+    def top5races_cat(self, start_time, category):
+        racecats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(race_time__gte=start_time, category=category).order_by('racer_count')
+        return racecats[0:5]
+
+
 class RaceCat(models.Model):
+    objects = RaceCatManager()
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     category = models.CharField(max_length=1)
 
@@ -25,10 +38,8 @@ class RaceCat(models.Model):
     def __str__(self):
         return f'[{self.category}] {self.race}'
 
-class RaceCatManager(models.Manager):
-    def top5races(self):
-        # Need to filter down to top races per category
-        pass
+
+
 
 class RaceResult(models.Model):
     race_cat = models.ForeignKey(RaceCat, on_delete=models.CASCADE)
