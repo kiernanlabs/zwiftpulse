@@ -52,10 +52,20 @@ class RaceResultManager(models.Manager):
 
 class TeamManager(models.Manager):
     def get_top_10_teams(self, category):
-        teams = super.all()
-        pass
+        teams = Team.objects.all()
+        team_ranking = []
+        for team in teams:
+            raceresults = team.get_wins_24hrs(category)
+            team_ranking.append({
+                "team": team,
+                "24hr_wins": raceresults,
+                "24hr_wins_count": len(raceresults)
+            })
+        return sorted(team_ranking,key=lambda d: d['24hr_wins_count'], reverse=True)[:10]
+        
 
 class Team(models.Model):
+    objects = TeamManager()
     name = models.CharField(max_length=200)
     
     def get_wins_24hrs(self, category):
