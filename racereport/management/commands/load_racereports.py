@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from racereport.models import Race, RaceCat, RaceResult
+from racereport.models import Race, RaceCat, RaceResult, Team
 from datetime import datetime
 import csv
 import glob
@@ -64,9 +64,13 @@ class Command(BaseCommand):
         zp_rank_event = row[7]
         if zp_rank_before == '': zp_rank_before=0
         if zp_rank_event == '': zp_rank_event=0
+        
+        team_name = row[3]
+        if row[3] == '': team_name='None'
+        team_obj = Team.objects.get_or_create(name=team_name)
 
         race_result = RaceResult.objects.get_or_create(
             race_cat = race_cat_row,
             racer_name = row[2],
-            defaults={'team': row[4], 'position': row[8], 'time_ms': row[5], 'zp_rank_before': zp_rank_before, 'zp_rank_event': zp_rank_event}
+            defaults={'team':team_obj[0], 'position': row[8], 'time_ms': row[5], 'zp_rank_before': zp_rank_before, 'zp_rank_event': zp_rank_event}
         )
