@@ -12,6 +12,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 
 import logging
 import time
+from time import sleep
 import re
 import os.path
 import pytz
@@ -27,7 +28,7 @@ class Command(BaseCommand):
     help = 'scrapes and imports race results from zwiftpower into the database'
 
     def add_arguments(self, parser):
-        parser.add_argument('count', nargs='?', default=10)
+        parser.add_argument('count', nargs='?', default=200)
 
     def handle(self, *args, **options):
         startTime = time.time()
@@ -39,7 +40,7 @@ class Command(BaseCommand):
 
         # STEP 1: Get URLs to scrape
         urls = self.getRaceURLs("https://zwiftpower.com/", driver)
-        print(f"{len(urls)} Events found; scraping first {options['count']}")
+        print(f"{len(urls)} New events found; scraping first {options['count']}")
         
         urls = urls[0:options['count']]
         successFinishes = 0
@@ -102,12 +103,18 @@ class Command(BaseCommand):
         links = results.find_elements(By.TAG_NAME, "a")
         print(f"found {len(links)} events")
 
+
         if close_at_end:
             driver.quit()
-        
+
         urls = []
         for link in links:
+            # Previous code to only pull new races - unclear if needed
+            # event_id = self.toEventID(link.get_attribute("href"))
+            # if len(Race.objects.filter(event_id=event_id)) == 0:
+            
             urls.append(link.get_attribute("href"))
+        
         return urls
     
     
@@ -126,7 +133,7 @@ class Command(BaseCommand):
             finishData = []
             driver.get(url)
 
-            if len(driver.find_elements(By.XPATH, '//*[@id="login"]/fieldset/div/div[1]/div/a')) > 0: login(driver)
+            if len(driver.find_elements(By.XPATH, '//*[@id="login"]/fieldset/div/div[1]/div/a')) > 0: self.login(driver)
             
             raceName = driver.find_element(By.XPATH, '//*[@id="header_details"]/div[1]/h3').text
             raceName = re.sub(r"[^A-Za-z0-9 ]+", "", raceName)
@@ -246,7 +253,7 @@ class Command(BaseCommand):
                     except IndexError:
                         if n > 10 :
                             raise Exception("Timeout waiting for prime data")
-                        driver.sleep(0.25)
+                        sleep(0.25)
                     else:
                         break
                 presults = {}
@@ -273,7 +280,7 @@ class Command(BaseCommand):
                                 )
                             except StaleElementReferenceException:
                                 testCell2 = testCell
-                            driver.sleep(0.25)
+                            sleep(0.25)
 
                         testCell = testCell2
                         primeResults = driver.find_element(
@@ -310,7 +317,7 @@ class Command(BaseCommand):
         event_datetime = datetime.fromtimestamp(int(rider_data[0]['EventTimestamp']), pytz.timezone("US/Eastern"))
         race = Race.objects.get_or_create(
                 event_id=rider_data[0]['EventID'],
-                defaults={'event_datetime': event_datetime, 'event_name': event_name}
+                defaults={'event_datetime': event_datetime, 'event_name': event_name_trim}
         )[0]
 
         # assume data is coming in sorted
@@ -343,9 +350,9 @@ class Command(BaseCommand):
             race_cat = race_cat_row,
             racer_name = row['Name'],
             defaults={'team':team_obj[0], 'position': position, 'time_ms': row['Time'], 'zp_rank_before': zp_rank_before, 'zp_rank_event': zp_rank_event}
-        )
+        )[0]
 
-        print(f'Successfully created: {race_result}')
+        print(f'Successfully created: {race_result} | position {race_result.position}')
         
     
     '''Logs into ZwiftPower if needed as part of scraping process'''
