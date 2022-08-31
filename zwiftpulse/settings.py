@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-gitzsbe&3d#dw45&w6y6!*g)=8=lt*crs-m!(*w_$x4*i@4r#c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ec2-3-235-77-89.compute-1.amazonaws.com']
+ALLOWED_HOSTS = ['ec2-3-235-77-89.compute-1.amazonaws.com', '3.235.77.89']
 
 
 # Application definition
