@@ -3,12 +3,23 @@ from racereport.models import Race, RaceCat, RaceResult, Team
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
+
 from webdriver_manager.firefox import GeckoDriverManager
+
+from selenium.webdriver.chrome.service import Service as ChromiumService
+from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.core.utils import ChromeType
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+
+
+
+from selenium.webdriver import Chrome
+
 
 import logging
 import time
@@ -30,13 +41,20 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('count', nargs='?', default=200)
 
+    def initialize_driver(self):
+        opts = ChromeOptions()
+        opts.headless = True
+        opts.add_argument("--no-sandbox")
+        opts.add_argument("--disable-gpu")
+        opts.add_argument("--window-size=1920,1080")
+        service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+        driver = webdriver.Chrome(service=service, options=opts)
+        return driver
+
     def handle(self, *args, **options):
         startTime = time.time()
         
-        opts = Options()
-        opts.headless = True
-        service = Service(GeckoDriverManager().install())
-        driver = webdriver.Firefox(service=service, options=opts)
+        driver = self.initialize_driver()
 
         # STEP 1: Get URLs to scrape
         urls = self.getRaceURLs("https://zwiftpower.com/", driver)
@@ -79,11 +97,11 @@ class Command(BaseCommand):
     '''===CORE SCRAPING FUNCTIONS==='''    
     '''Returns list of URLS to scrape'''    
     def getRaceURLs(self, urlpage, driver=None):
-        opts = Options()
+
         close_at_end = 0
         if driver == None: 
             close_at_end = 1
-            driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=opts)
+            driver = self.initialize_driver()
         
         print("Scraping data from: {}.".format(urlpage))
         driver.get(urlpage)
@@ -120,12 +138,11 @@ class Command(BaseCommand):
     
     '''scrapes data from specified URL'''    
     def scrape(self, urlpage, driver=None):
-        opts = Options()
         scraped_data = {} 
         
         close_at_end = 0
         if driver == None:
-            driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=opts)
+            driver = self.initialize_driver()
             close_at_end = 1
         # driver.implicitly_wait(10)
         for n, url in enumerate(urlpage):
@@ -373,7 +390,8 @@ class Command(BaseCommand):
             loginButton2.click()
         except:
             return None
-
+    
+    
 
     '''===HELPER FUNCTIONS FOR SCRAPING==='''        
 
