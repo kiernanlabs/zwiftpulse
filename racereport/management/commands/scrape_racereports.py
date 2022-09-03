@@ -49,7 +49,7 @@ class Command(BaseCommand):
         opts.add_argument("--no-sandbox")
         opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--disable-gpu")
-        opts.add_argument("--window-size=800,600")
+        opts.add_argument("--window-size=1920,1080")
         opts.add_argument("--remote-debugging-port=9222")  # this
 
         service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
