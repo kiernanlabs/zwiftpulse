@@ -39,15 +39,17 @@ class Command(BaseCommand):
     help = 'scrapes and imports race results from zwiftpower into the database'
 
     def add_arguments(self, parser):
-        parser.add_argument('count', nargs='?', default=200)
+        parser.add_argument('count', nargs='?', default=20, type=int, help='number of URLs to scrape')
+        parser.add_argument('--url', nargs='?', help="single URL to scrape")
+
 
     def initialize_driver(self):
         opts = ChromeOptions()
-        opts.headless = True
+        # opts.headless = True
         opts.add_argument("--no-sandbox")
         opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--disable-gpu")
-        opts.add_argument("--window-size=1920,1080")
+        opts.add_argument("--window-size=800,600")
         opts.add_argument("--remote-debugging-port=9222")  # this
 
         service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
@@ -59,11 +61,18 @@ class Command(BaseCommand):
         
         driver = self.initialize_driver()
 
-        # STEP 1: Get URLs to scrape
-        urls = self.getRaceURLs("https://zwiftpower.com/", driver)
-        print(f"{len(urls)} New events found; scraping first {options['count']}")
+        if options['url'] != None: 
+            print(f"URL param found scraping {options['url']}")
+            urls=[options['url']]
+            options['count'] = 1
+            
+        else:
+            # STEP 1: Get URLs to scrape
+            urls = self.getRaceURLs("https://zwiftpower.com/", driver)
+            print(f"{len(urls)} New events found; scraping first {options['count']}")
+            
+            urls = urls[0:options['count']]
         
-        urls = urls[0:options['count']]
         successFinishes = 0
         finishErrorURLs = []
         successPrimes = 0
@@ -334,6 +343,10 @@ class Command(BaseCommand):
         event_name_trim = event_name[8:]
         print(f'Attempting to save: {event_name_trim}')
         
+        if rider_data == []:
+            print(f'Error saving {event_name}, no rider data')
+            return
+
         event_datetime = datetime.fromtimestamp(int(rider_data[0]['EventTimestamp']), pytz.timezone("US/Eastern"))
         race = Race.objects.get_or_create(
                 event_id=rider_data[0]['EventID'],
