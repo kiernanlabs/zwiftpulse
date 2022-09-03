@@ -45,7 +45,7 @@ class Command(BaseCommand):
 
     def initialize_driver(self):
         opts = ChromeOptions()
-        # opts.headless = True
+        opts.headless = True
         opts.add_argument("--no-sandbox")
         opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--disable-gpu")
@@ -65,7 +65,7 @@ class Command(BaseCommand):
             print(f"URL param found scraping {options['url']}")
             urls=[options['url']]
             options['count'] = 1
-            
+
         else:
             # STEP 1: Get URLs to scrape
             urls = self.getRaceURLs("https://zwiftpower.com/", driver)
