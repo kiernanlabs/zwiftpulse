@@ -50,7 +50,7 @@ class Command(BaseCommand):
         opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--disable-gpu")
         opts.add_argument("--window-size=1920,1080")
-        opts.add_argument("--remote-debugging-port=9222")  # this
+        opts.add_argument("--remote-debugging-port=9222")
 
         service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
         driver = webdriver.Chrome(service=service, options=opts)
@@ -198,7 +198,7 @@ class Command(BaseCommand):
                 columnButton.click()
                 rankBeforeButton = driver.find_element(By.XPATH, '//*[@id="columnFilter"]//*[@id="table_event_results_final_view_27"]/span')
                 rankEventButton = driver.find_element(By.XPATH, '//*[@id="columnFilter"]//*[@id="table_event_results_final_view_28"]/span')
-                rankEventButton.location_once_scrolled_into_view
+                rankBeforeButton.location_once_scrolled_into_view
                 rankBeforeButton.click()
                 rankEventButton.click()
                 results = driver.find_element(
