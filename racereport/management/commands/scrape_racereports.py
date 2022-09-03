@@ -45,6 +45,7 @@ class Command(BaseCommand):
         opts = ChromeOptions()
         opts.headless = True
         opts.add_argument("--no-sandbox")
+        opts.add_argument("--disable-dev-shm-usage")
         opts.add_argument("--disable-gpu")
         opts.add_argument("--window-size=1920,1080")
         service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
