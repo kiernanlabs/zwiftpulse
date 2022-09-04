@@ -99,10 +99,10 @@ class Command(BaseCommand):
                     # Not currently storing prime data
                     # zwift_scrape.mkdirAndSave("primes", event[1][1], event[0])
 
-        print(f"==== [Run Report:{datetime.now()}] Total Execution time: {round((time.time() - startTime)/60,1)} minutes")
-        print(f"==== [Run Report:{datetime.now()}] Successful finish data scrapes: {successFinishes}/{options['count']}")
-        print(f"==== [Run Report:{datetime.now()}] Successful prime data scrapes: {successPrimes}/{options['count']}")
-        print(f"==== [Run Report:{datetime.now()}] events with scrape errors:")
+        print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Total Execution time: {round((time.time() - startTime)/60,1)} minutes")
+        print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Successful finish data scrapes: {successFinishes}/{options['count']}")
+        print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Successful prime data scrapes: {successPrimes}/{options['count']}")
+        print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] events with scrape errors:")
         for errorUrl in finishErrorURLs:
             print(f'==== [Run Report] * {errorUrl}')
         driver.quit()
