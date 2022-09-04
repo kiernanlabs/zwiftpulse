@@ -13,5 +13,7 @@ from .models import Race, RaceCat, RaceResult, Team
 def index(request):
     race_cats = RaceCat.objects.racecats_last24hrs().annotate(racer_count=Count('raceresult')).order_by("-racer_count")
     top_teams = Team.objects.get_top_10_teams()
-    context = {'racecats': race_cats, 'top_teams': top_teams}
+    last_race_imported = Race.objects.last()
+    most_recent_race_imported = Race.objects.latest('event_datetime')
+    context = {'racecats': race_cats, 'top_teams': top_teams, 'last_race_imported': last_race_imported, 'most_recent_race_imported': most_recent_race_imported}
     return render(request, 'racereport/racecat_list.html', context)

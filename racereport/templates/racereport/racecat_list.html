@@ -1,6 +1,11 @@
 {% extends "racereport/base.html" %}
 
 {% block content %}
+    <span><small>
+        <p>Last race imported: {{last_race_imported}} [{{most_recent_race_imported.event_datetime|date:'Y-m-d H:i'}}]</p>
+        <p>Most recent race imported: {{most_recent_race_imported}} [{{most_recent_race_imported.event_datetime|date:'Y-m-d H:i'}}]</p>
+    </small></span> 
+    </p>
     <h4>
         Top 10 Teams, last 24hrs
     </h4>

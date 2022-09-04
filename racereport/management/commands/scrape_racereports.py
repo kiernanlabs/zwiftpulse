@@ -90,18 +90,19 @@ class Command(BaseCommand):
             for (name, event) in enumerate(results.items()):
                 if event[1][0] is None: finishErrorURLs.append(url)
                 else: 
-                    successFinishes += 1
-                    self.save_finishes(event[0], event[1][0])
+                    if self.save_finishes(event[0], event[1][0]):
+                        successFinishes += 1
+                    
                 if event[1][1] is None: primeErrorURLs.append(url)
                 else: 
                     successPrimes += 1
                     # Not currently storing prime data
                     # zwift_scrape.mkdirAndSave("primes", event[1][1], event[0])
 
-        print(f"==== [Run Report] Total Execution time: {round((time.time() - startTime)/60,1)} minutes")
-        print(f"==== [Run Report] Successful finish data scrapes: {successFinishes}/{options['count']}")
-        print(f"==== [Run Report] Successful prime data scrapes: {successPrimes}/{options['count']}")
-        print(f"==== [Run Report] events with scrape errors:")
+        print(f"==== [Run Report:{datetime.now()}] Total Execution time: {round((time.time() - startTime)/60,1)} minutes")
+        print(f"==== [Run Report:{datetime.now()}] Successful finish data scrapes: {successFinishes}/{options['count']}")
+        print(f"==== [Run Report:{datetime.now()}] Successful prime data scrapes: {successPrimes}/{options['count']}")
+        print(f"==== [Run Report:{datetime.now()}] events with scrape errors:")
         for errorUrl in finishErrorURLs:
             print(f'==== [Run Report] * {errorUrl}')
         driver.quit()
@@ -345,7 +346,7 @@ class Command(BaseCommand):
         
         if rider_data == []:
             print(f'Error saving {event_name}, no rider data')
-            return
+            return False
 
         event_datetime = datetime.fromtimestamp(int(rider_data[0]['EventTimestamp']), pytz.timezone("US/Eastern"))
         race = Race.objects.get_or_create(
@@ -361,7 +362,7 @@ class Command(BaseCommand):
             finishers_by_category[race_result['Category']] = finishers_by_category.get(race_result['Category'],0)+1
             self.import_race_result(race, race_result, finishers_by_category[race_result['Category']])
 
-        return
+        return True
 
     def import_race_result(self, race, row, position):
         race_cat_row = RaceCat.objects.get_or_create(
