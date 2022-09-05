@@ -16,10 +16,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.utils import ChromeType
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 
-
-
 from selenium.webdriver import Chrome
-
 
 import logging
 import time
@@ -64,14 +61,14 @@ class Command(BaseCommand):
             service=settings['service'], options=settings['options']
         ) as driver:
             if options['url'] != None: 
-                print(f"URL param found scraping {options['url']}")
+                logger.info(f"URL param found scraping {options['url']}")
                 urls=[options['url']]
                 options['count'] = 1
 
             else:
                 # STEP 1: Get URLs to scrape
                 urls = self.getRaceURLs("https://zwiftpower.com/", driver)
-                print(f"{len(urls)} New events found; scraping first {options['count']}")
+                logger.info(f"{len(urls)} New events found; scraping first {options['count']}")
                 
                 urls = urls[0:options['count']]
             
@@ -81,7 +78,7 @@ class Command(BaseCommand):
             primeErrorURLs = []
 
             for n, url in enumerate(urls) :
-                print(f"URL #{n+1}/{options['count']}: {url}")
+                logger.info(f"URL #{n+1}/{options['count']}: {url}")
                 urlArray = [url]
                 
                 # STEP 2: For each URL, scrape the data
@@ -101,23 +98,23 @@ class Command(BaseCommand):
                         # Not currently storing prime data
                         # zwift_scrape.mkdirAndSave("primes", event[1][1], event[0])
 
-            print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Total Execution time: {round((time.time() - startTime)/60,1)} minutes")
-            print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Successful finish data scrapes: {successFinishes}/{options['count']}")
-            print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Successful prime data scrapes: {successPrimes}/{options['count']}")
-            print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] events with scrape errors:")
+            logger.info(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Total Execution time: {round((time.time() - startTime)/60,1)} minutes")
+            logger.info(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Successful finish data scrapes: {successFinishes}/{options['count']}")
+            logger.info(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Successful prime data scrapes: {successPrimes}/{options['count']}")
+            logger.info(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] events with scrape errors:")
             for errorUrl in finishErrorURLs:
-                print(f'==== [Run Report] * {errorUrl}')
+                logger.info(f'==== [Run Report] * {errorUrl}')
 
     '''===CORE SCRAPING FUNCTIONS==='''    
     '''Returns list of URLS to scrape'''    
     def getRaceURLs(self, urlpage, driver):
         
-        print("Scraping data from: {}.".format(urlpage))
+        logger.info("Scraping data from: {}.".format(urlpage))
         driver.get(urlpage)
         
         if len(driver.find_elements(By.XPATH, '//*[@id="login"]/fieldset/div/div[1]/div/a')) > 0: self.login(driver)
         
-        print("collecting race URLs...")
+        logger.debug("collecting race URLs...")
         
         resultsButton = driver.find_element(By.XPATH, '//button[@id="button_event_results"]')
         resultsButton.click()
@@ -128,7 +125,7 @@ class Command(BaseCommand):
         sleep(3)
         results = driver.find_element(By.XPATH, '//*[@id="zwift_event_list"]/tbody')
         links = results.find_elements(By.TAG_NAME, "a")
-        print(f"found {len(links)} events")
+        logger.debug(f"found {len(links)} events")
 
         urls = []
         for link in links:
@@ -146,11 +143,11 @@ class Command(BaseCommand):
         scraped_data = {} 
         
         for n, url in enumerate(urlpage):
-            print("--Scraping data from: {}.".format(url))
+            logger.debug("--Scraping data from: {}.".format(url))
             finishData = []
             driver.get(url)
 
-            print(f'--Getting new URL, current windows open: {len(driver.window_handles)}')
+            logger.debug(f'--Getting new URL, current windows open: {len(driver.window_handles)}')
 
             if len(driver.find_elements(By.XPATH, '//*[@id="login"]/fieldset/div/div[1]/div/a')) > 0: self.login(driver)
             
@@ -162,7 +159,7 @@ class Command(BaseCommand):
             raceTimestamp = driver.find_element(
                     By.XPATH, '//*[@id="EVENT_DATE"]'
                 ).get_attribute('data-value')
-            print(f"--{n}:{raceName} - Downloading data")
+            logger.debug(f"--{n}:{raceName} - Downloading data")
             
             #Attempt to load the page
             try:
@@ -175,7 +172,7 @@ class Command(BaseCommand):
                     > 0
                 )
             except:
-                print(f"--{n}:{raceName} - failed to load")
+                logger.info(f"--{n}:{raceName} - failed to load")
                 continue #do next URL
             
             #Attempt to capture finish positions
@@ -194,7 +191,7 @@ class Command(BaseCommand):
                 results = driver.find_element(
                     By.XPATH, '//*[@id="table_event_results_final"]/tbody'
                 )
-                print("--Collecting finish data for all riders...")
+                logger.debug("--Collecting finish data for all riders...")
                 for n in range(2, nPages + 2):
                     if n > 2:
                         button = driver.find_element(
@@ -238,9 +235,9 @@ class Command(BaseCommand):
                             rankEvent = cols[19].text
                         
                         finishData += [{"EventID": eventID, "EventTimestamp": raceTimestamp, "Name": name, "Team": team, "Category": category, "Time": time, "RankBefore": rankBefore, "RankEvent": rankEvent}]
-                print("--Found {} riders.".format(len(finishData)))
+                logger.info("--Found {} riders.".format(len(finishData)))
             except Exception as e:
-                print(f"--Failed to load finish data:{e}")
+                logger.info(f"--Failed to load finish data:{e}")
                 finishData = []
             
             #Attempt to capture primes positions
@@ -279,7 +276,7 @@ class Command(BaseCommand):
                 primeButtons.reverse()
                 for catBut in categoryBottons:
                     category = catBut.text
-                    print("--Collecting prime data for category {}...".format(category))
+                    logger.debug("--Collecting prime data for category {}...".format(category))
                     presults[category] = {}
                     catBut.click()
                     for primeBut in primeButtons:
@@ -318,20 +315,20 @@ class Command(BaseCommand):
                             combinedName = "{}_{}".format(lap, splitName)
                             presults[category][prime][combinedName] = scores
             except Exception as e:
-                print(f"--Failed to load prime data:{e}")
+                logger.info(f"--Failed to load prime data")
                 presults = []
             scraped_data[raceName] = [finishData, presults]
-            print("--Formatting scraped data...")
-        print("--Done.")
+            logger.debug("--Formatting scraped data...")
+        logger.debug("--Done.")
         return scraped_data
 
     '''Imports the scraped data into the database / models'''
     def save_finishes(self, event_name, rider_data):
         event_name_trim = event_name[8:]
-        print(f'Attempting to save: {event_name_trim}')
+        logger.info(f'--Attempting to save: {event_name_trim}')
         
         if rider_data == []:
-            print(f'Error saving {event_name}, no rider data')
+            logger.info(f'--Error saving {event_name}, no rider data')
             return False
 
         event_datetime = datetime.fromtimestamp(int(rider_data[0]['EventTimestamp']), pytz.timezone("US/Eastern"))
@@ -347,7 +344,8 @@ class Command(BaseCommand):
         for race_result in rider_data:
             finishers_by_category[race_result['Category']] = finishers_by_category.get(race_result['Category'],0)+1
             self.import_race_result(race, race_result, finishers_by_category[race_result['Category']])
-
+        
+        logger.info(f'--Saved {len(rider_data)} results')
         return True
 
     def import_race_result(self, race, row, position):
@@ -372,14 +370,14 @@ class Command(BaseCommand):
             defaults={'team':team_obj[0], 'position': position, 'time_ms': row['Time'], 'zp_rank_before': zp_rank_before, 'zp_rank_event': zp_rank_event}
         )[0]
 
-        print(f'Successfully created: {race_result} | position {race_result.position}')
+        logger.debug(f'Successfully created: {race_result} | position {race_result.position}')
         
     
     '''Logs into ZwiftPower if needed as part of scraping process'''
     def login(self, driver):
         email = settings.ZWIFT_EMAIL
         password = settings.ZWIFT_PWD
-        print(f'Login required...')
+        logger.info(f'Login required...')
         try:
             login_button = driver.find_element(
                     By.XPATH, '//*[@id="login"]/fieldset/div/div[1]/div/a'

@@ -79,12 +79,12 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': '%(asctime)s :: %(levelname)-8s :: %(message)s'
         },
     },
     'handlers': {
         'log_to_stdout': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
             },
@@ -92,7 +92,7 @@ LOGGING = {
     'loggers': {
         'main': {
             'handlers': ['log_to_stdout'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         }
     }
