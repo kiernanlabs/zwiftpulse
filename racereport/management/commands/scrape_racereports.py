@@ -43,7 +43,7 @@ class Command(BaseCommand):
         parser.add_argument('--url', nargs='?', help="single URL to scrape")
 
 
-    def initialize_driver(self):
+    def initialize_driver_settings(self):
         opts = ChromeOptions()
         opts.headless = True
         opts.add_argument("--no-sandbox")
@@ -53,68 +53,64 @@ class Command(BaseCommand):
         opts.add_argument("--remote-debugging-port=9222")
 
         service=ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
-        driver = webdriver.Chrome(service=service, options=opts)
-        return driver
+        # driver = webdriver.Chrome(service=service, options=opts)
+        return {'options': opts, 'service': service}
 
     def handle(self, *args, **options):
         startTime = time.time()
         
-        driver = self.initialize_driver()
+        settings = self.initialize_driver_settings()
+        with webdriver.Chrome(
+            service=settings['service'], options=settings['options']
+        ) as driver:
+            if options['url'] != None: 
+                print(f"URL param found scraping {options['url']}")
+                urls=[options['url']]
+                options['count'] = 1
 
-        if options['url'] != None: 
-            print(f"URL param found scraping {options['url']}")
-            urls=[options['url']]
-            options['count'] = 1
-
-        else:
-            # STEP 1: Get URLs to scrape
-            urls = self.getRaceURLs("https://zwiftpower.com/", driver)
-            print(f"{len(urls)} New events found; scraping first {options['count']}")
+            else:
+                # STEP 1: Get URLs to scrape
+                urls = self.getRaceURLs("https://zwiftpower.com/", driver)
+                print(f"{len(urls)} New events found; scraping first {options['count']}")
+                
+                urls = urls[0:options['count']]
             
-            urls = urls[0:options['count']]
-        
-        successFinishes = 0
-        finishErrorURLs = []
-        successPrimes = 0
-        primeErrorURLs = []
+            successFinishes = 0
+            finishErrorURLs = []
+            successPrimes = 0
+            primeErrorURLs = []
 
-        for n, url in enumerate(urls) :
-            print(f"URL #{n+1}/{options['count']}: {url}")
-            urlArray = [url]
-            
-            # STEP 2: For each URL, scrape the data
-            # Currently doing one URL at a time and then saving; could do more
-            results = self.scrape(urlArray, driver)  
+            for n, url in enumerate(urls) :
+                print(f"URL #{n+1}/{options['count']}: {url}")
+                urlArray = [url]
+                
+                # STEP 2: For each URL, scrape the data
+                # Currently doing one URL at a time and then saving; could do more
+                results = self.scrape(urlArray, driver)  
 
-            # STEP 3: For each race, save the data
-            for (name, event) in enumerate(results.items()):
-                if event[1][0] is None: finishErrorURLs.append(url)
-                else: 
-                    if self.save_finishes(event[0], event[1][0]):
-                        successFinishes += 1
-                    
-                if event[1][1] is None: primeErrorURLs.append(url)
-                else: 
-                    successPrimes += 1
-                    # Not currently storing prime data
-                    # zwift_scrape.mkdirAndSave("primes", event[1][1], event[0])
+                # STEP 3: For each race, save the data
+                for (name, event) in enumerate(results.items()):
+                    if event[1][0] is None: finishErrorURLs.append(url)
+                    else: 
+                        if self.save_finishes(event[0], event[1][0]):
+                            successFinishes += 1
+                        
+                    if event[1][1] is None: primeErrorURLs.append(url)
+                    else: 
+                        successPrimes += 1
+                        # Not currently storing prime data
+                        # zwift_scrape.mkdirAndSave("primes", event[1][1], event[0])
 
-        print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Total Execution time: {round((time.time() - startTime)/60,1)} minutes")
-        print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Successful finish data scrapes: {successFinishes}/{options['count']}")
-        print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Successful prime data scrapes: {successPrimes}/{options['count']}")
-        print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] events with scrape errors:")
-        for errorUrl in finishErrorURLs:
-            print(f'==== [Run Report] * {errorUrl}')
-        driver.quit()
+            print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Total Execution time: {round((time.time() - startTime)/60,1)} minutes")
+            print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Successful finish data scrapes: {successFinishes}/{options['count']}")
+            print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] Successful prime data scrapes: {successPrimes}/{options['count']}")
+            print(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] events with scrape errors:")
+            for errorUrl in finishErrorURLs:
+                print(f'==== [Run Report] * {errorUrl}')
 
     '''===CORE SCRAPING FUNCTIONS==='''    
     '''Returns list of URLS to scrape'''    
-    def getRaceURLs(self, urlpage, driver=None):
-
-        close_at_end = 0
-        if driver == None: 
-            close_at_end = 1
-            driver = self.initialize_driver()
+    def getRaceURLs(self, urlpage, driver):
         
         print("Scraping data from: {}.".format(urlpage))
         driver.get(urlpage)
@@ -129,14 +125,10 @@ class Command(BaseCommand):
         filterButton.click()
         raceButton = driver.find_element(By.XPATH, '//button[@data-value="TYPE_RACE"]')
         raceButton.click()
-
+        sleep(3)
         results = driver.find_element(By.XPATH, '//*[@id="zwift_event_list"]/tbody')
         links = results.find_elements(By.TAG_NAME, "a")
         print(f"found {len(links)} events")
-
-
-        if close_at_end:
-            driver.quit()
 
         urls = []
         for link in links:
@@ -150,18 +142,15 @@ class Command(BaseCommand):
     
     
     '''scrapes data from specified URL'''    
-    def scrape(self, urlpage, driver=None):
+    def scrape(self, urlpage, driver):
         scraped_data = {} 
         
-        close_at_end = 0
-        if driver == None:
-            driver = self.initialize_driver()
-            close_at_end = 1
-        # driver.implicitly_wait(10)
         for n, url in enumerate(urlpage):
             print("--Scraping data from: {}.".format(url))
             finishData = []
             driver.get(url)
+
+            print(f'--Getting new URL, current windows open: {len(driver.window_handles)}')
 
             if len(driver.find_elements(By.XPATH, '//*[@id="login"]/fieldset/div/div[1]/div/a')) > 0: self.login(driver)
             
@@ -332,9 +321,6 @@ class Command(BaseCommand):
                 print(f"--Failed to load prime data:{e}")
                 presults = []
             scraped_data[raceName] = [finishData, presults]
-            if close_at_end:
-                driver.quit()
-                print("--Closing connection to {}".format(url))
             print("--Formatting scraped data...")
         print("--Done.")
         return scraped_data

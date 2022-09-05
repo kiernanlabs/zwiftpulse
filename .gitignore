@@ -1,3 +1,4 @@
 racereport/management/commands/credentials.py
 zwiftpulse/.env
 db.sqlite3
+db.sqlite3
