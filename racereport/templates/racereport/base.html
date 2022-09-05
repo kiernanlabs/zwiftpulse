@@ -2,18 +2,24 @@
 <html lang="en">
 
 <head>
-    <title>Zwift Pulse</title>
+    <title>The Pulse</title>
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
 </head>
 
 <body>
     <header>
-        <h1>Zwift Pulse</h1>
+        <h1>The Pulse</h1>
     </header>
     <main>
-        {% block content %}
-            <h2>Welcome!</h2>
-        {% endblock content %}
+        {% block status %}
+            <p>Current Status: n/a</p>
+        {% endblock status %}
+
+        {% block teams %}
+        {% endblock teams %}
+
+        {% block races %}
+        {% endblock races %}
     </main>
 </body>
 

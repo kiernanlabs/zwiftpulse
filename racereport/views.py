@@ -16,4 +16,4 @@ def index(request):
     last_race_imported = Race.objects.last()
     most_recent_race_imported = Race.objects.latest('event_datetime')
     context = {'racecats': race_cats, 'top_teams': top_teams, 'last_race_imported': last_race_imported, 'most_recent_race_imported': most_recent_race_imported}
-    return render(request, 'racereport/racecat_list.html', context)
+    return render(request, 'racereport/report.html', context)

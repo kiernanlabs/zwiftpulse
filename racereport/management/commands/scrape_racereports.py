@@ -159,7 +159,7 @@ class Command(BaseCommand):
             raceTimestamp = driver.find_element(
                     By.XPATH, '//*[@id="EVENT_DATE"]'
                 ).get_attribute('data-value')
-            logger.debug(f"--{n}:{raceName} - Downloading data")
+            logger.info(f"--{n}:{raceName} - Downloading data")
             
             #Attempt to load the page
             try:

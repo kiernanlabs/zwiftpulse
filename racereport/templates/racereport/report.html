@@ -1,11 +1,13 @@
 {% extends "racereport/base.html" %}
 
-{% block content %}
+{% block status %}
     <span><small>
         <p>Last race imported: [{{last_race_imported.event_id}}] {{last_race_imported}} [{{last_race_imported.event_datetime|date:'Y-m-d H:i T'}}]</p>
         <p>Most recent race imported: [{{most_recent_race_imported.event_id}}] {{most_recent_race_imported}} [{{most_recent_race_imported.event_datetime|date:'Y-m-d H:i T'}}]</p>
     </small></span> 
-    </p>
+{% endblock status %}
+
+{% block teams %}
     <h4>
         Top 10 Teams, last 24hrs
     </h4>
@@ -19,14 +21,15 @@
         {% for team in top_teams %}
             <tr>
                 <td>{{team.team.name}}</td>
-                <td>{{team.24hr_wins_count}} [{{team.wins_change}}]</td>
-                <td>{{team.24hr_podiums_count}} [{{team.podiums_change}}]</td>
+                <td>{{team.24hr_wins_count}} <small>[{{team.wins_change|stringformat:"+d"}}]</small></td>
+                <td>{{team.24hr_podiums_count}} <small>[{{team.podiums_change|stringformat:"+d"}}]</small></td>
                 <td>{{team.all_time_wins}}</td>             
             </tr>
         {% endfor %}
     </table>
+{% endblock teams %}
 
-
+{% block races %}
     <h4>
         Top 5 Races, last 24hrs ({{ racecats|length }})
     </h4>
@@ -69,4 +72,4 @@
             </tr>
         {% endfor %}
     </table>
-{% endblock content %}
+{% endblock races %}
