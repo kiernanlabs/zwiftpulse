@@ -68,8 +68,8 @@ class Command(BaseCommand):
             else:
                 # STEP 1: Get URLs to scrape
                 urls = self.getRaceURLs("https://zwiftpower.com/", driver)
-                logger.info(f"{len(urls)} New events found; scraping first {options['count']}")
-                
+                logger.info(f"{len(urls)} New events found; up to scraping first {options['count']}")
+                options['count'] = min(options['count'], len(urls))
                 urls = urls[0:options['count']]
             
             successFinishes = 0
