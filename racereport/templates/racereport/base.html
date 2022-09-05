@@ -7,10 +7,18 @@
     <title>The Pulse</title>
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
 </head>
-
+<nav>
+    <a href="/">All Categories</a>
+    |
+    <a href="/A">A</a>
+    <a href="/B">B</a>
+    <a href="/C">C</a>
+    <a href="/D">D</a>
+    <a href="/E">E</a>
+  </nav>
 <body>
     <header>
-        <h1>The Pulse</h1>
+        <h1>The Pulse ~ {{category|default:"All Categories"}}</h1>
     </header>
     <main>
         {% block status %}

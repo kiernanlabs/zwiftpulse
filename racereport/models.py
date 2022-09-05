@@ -27,17 +27,27 @@ class RaceCatManager(models.Manager):
     def racecats_since(self, start_time):
         return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(race_time__gte=start_time)
     
-    def racecats_last24hrs(self):
+    def racecats_last24hrs(self, category=None):
         twenty_four_hours_ago = timezone.now() - timedelta(days = 1)
-        return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
-            race_time__gte=twenty_four_hours_ago)
+        if category:
+            return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
+                race_time__gte=twenty_four_hours_ago, category=category)
+        else:
+            return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
+                race_time__gte=twenty_four_hours_ago)
 
-    def racecats_prev24hrs(self):
+    def racecats_prev24hrs(self, category=None):
         twenty_four_hours_ago = timezone.now() - timedelta(days = 1)
         forty_eight_hours_ago = timezone.now() - timedelta(days = 2)
-        return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
-            race_time__gte=forty_eight_hours_ago,
-            race_time__lte=twenty_four_hours_ago)
+        if category:
+            return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
+                race_time__gte=forty_eight_hours_ago,
+                race_time__lte=twenty_four_hours_ago,
+                category=category)
+        else:
+            return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
+                race_time__gte=forty_eight_hours_ago,
+                race_time__lte=twenty_four_hours_ago)
 
 class RaceCat(models.Model):
     objects = RaceCatManager()
@@ -82,12 +92,12 @@ class RaceResultManager(models.Manager):
         return raceresults
 
 class TeamManager(models.Manager):
-    def get_top_10_teams(self):
+    def get_top_10_teams(self, category=None):
         teams = Team.objects.all()
         team_ranking = []
         for team in teams:
-            team_last_24hr_results = team.get_podiums_last_24hrs()
-            team_prev_24hr_results = team.get_podiums_prev_24hrs()
+            team_last_24hr_results = team.get_podiums_last_24hrs(category)
+            team_prev_24hr_results = team.get_podiums_prev_24hrs(category)
             team_all_results = team.get_all_podiums()
             team_ranking.append({
                 "team": team,
@@ -112,14 +122,15 @@ class Team(models.Model):
         return {'win_results': win_results, 'podium_results': podium_results}
 
 
-    def get_podiums_last_24hrs(self):
-        racecats_since = RaceCat.objects.racecats_last24hrs()
+    def get_podiums_last_24hrs(self, category=None):
+        racecats_since = None
+        racecats_since = RaceCat.objects.racecats_last24hrs(category)    
         win_results = RaceResult.objects.filter(race_cat__in=racecats_since, position=1, team=self)
         podium_results = RaceResult.objects.filter(race_cat__in=racecats_since, position__lte=3, team=self)
         return {'win_results': win_results, 'podium_results': podium_results}
 
-    def get_podiums_prev_24hrs(self):
-        racecats_since = RaceCat.objects.racecats_prev24hrs()
+    def get_podiums_prev_24hrs(self, category=None):
+        racecats_since = RaceCat.objects.racecats_prev24hrs(category)
         win_results = RaceResult.objects.filter(race_cat__in=racecats_since, position=1, team=self)
         podium_results = RaceResult.objects.filter(race_cat__in=racecats_since, position__lte=3, team=self)
         return {'win_results': win_results, 'podium_results': podium_results}
