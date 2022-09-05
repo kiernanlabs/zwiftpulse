@@ -130,10 +130,9 @@ class Command(BaseCommand):
         urls = []
         for link in links:
             # Previous code to only pull new races - unclear if needed
-            # event_id = self.toEventID(link.get_attribute("href"))
-            # if len(Race.objects.filter(event_id=event_id)) == 0:
-            
-            urls.append(link.get_attribute("href"))
+            event_id = self.toEventID(link.get_attribute("href"))
+            if len(Race.objects.filter(event_id=event_id)) == 0:
+                urls.append(link.get_attribute("href"))
         
         return urls
     
