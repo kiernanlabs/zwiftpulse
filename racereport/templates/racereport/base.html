@@ -8,19 +8,24 @@
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
 </head>
 <nav>
-    <a href="/">All Categories</a>
+    <a href="/week">All Categories</a>
     |
-    <a href="/A">A</a>
-    <a href="/B">B</a>
-    <a href="/C">C</a>
-    <a href="/D">D</a>
-    <a href="/E">E</a>
+    <a href="/week/A">A</a>
+    <a href="/week/B">B</a>
+    <a href="/week/C">C</a>
+    <a href="/week/D">D</a>
+    <a href="/week/E">E</a>
   </nav>
 <body>
     <header>
         <h1>The Pulse ~ {{category|default:"All Categories"}}</h1>
     </header>
     <main>
+        <p>
+            What is this?  Every day in Zwift races, thousands of riders lay it all on the line just to make it over a virtual hill or across a virtual finish line half a second sooner than a stranger half a world away.
+            Zwift Pulse is about weaving all of those efforts together into hundreds of unique, but connected narratives.  It's about creating and celebrating a larger community.
+        </p>
+        <hr>
         {% block status %}
             <p>Current Status: n/a</p>
         {% endblock status %}

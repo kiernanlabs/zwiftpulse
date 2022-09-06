@@ -27,6 +27,30 @@ class RaceCatManager(models.Manager):
     def racecats_since(self, start_time):
         return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(race_time__gte=start_time)
     
+    def racecats_this_week(self, category=None):
+        today = timezone.now()
+        beginning_of_week = today - timedelta(days=today.weekday(),hours=today.hour, minutes=today.minute, seconds=today.second, microseconds=today.microsecond)
+        if category:
+            return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
+                race_time__gte=beginning_of_week, category=category)
+        else:
+            return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
+                race_time__gte=beginning_of_week)
+    
+    def racecats_prev_week(self, category=None):
+        today = timezone.now()
+        end_of_last_week = today - timedelta(days=today.weekday(),hours=today.hour, minutes=today.minute, seconds=today.second, microseconds=today.microsecond)
+        beginning_of_last_week = end_of_last_week - timedelta(days=7)
+        if category:
+            return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
+                race_time__gte=beginning_of_last_week,
+                race_time__lte=end_of_last_week,
+                category=category)
+        else:
+            return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
+                race_time__gte=beginning_of_last_week,
+                race_time__lte=end_of_last_week)
+
     def racecats_last24hrs(self, category=None):
         twenty_four_hours_ago = timezone.now() - timedelta(days = 1)
         if category:
@@ -109,7 +133,26 @@ class TeamManager(models.Manager):
                 "podiums_change": (len(team_last_24hr_results['podium_results']) - len(team_prev_24hr_results['podium_results'])),
                 "all_time_wins": len(team_all_results['win_results']),
             })
-        return sorted(team_ranking,key=lambda d: d['24hr_wins_count'], reverse=True)[:10]
+        return sorted(team_ranking,key=lambda d: d['24hr_wins_count'], reverse=True)[:11]
+    
+    def get_top_10_teams_this_week(self, category=None):
+        teams = Team.objects.all()
+        team_ranking = []
+        for team in teams:
+            team_this_week_results = team.get_podiums_this_week(category)
+            team_prev_week_results = team.get_podiums_prev_week(category)
+            team_last_24hr_results = team.get_podiums_last_24hrs(category)
+            team_all_results = team.get_all_podiums()
+            team_ranking.append({
+                "team": team,
+                "this_week_wins": team_this_week_results['win_results'],
+                "this_week_wins_count": len(team_this_week_results['win_results']),
+                "prev_week_wins_count": len(team_prev_week_results['win_results']),
+                "last_24hrs_wins_count": (len(team_last_24hr_results['win_results'])),
+                "this_week_podium_count": len(team_this_week_results['podium_results']),
+                "all_time_wins": len(team_all_results['win_results']),
+            })
+        return sorted(team_ranking,key=lambda d: d['this_week_wins_count'], reverse=True)[:11]
         
 
 class Team(models.Model):
@@ -135,6 +178,18 @@ class Team(models.Model):
         podium_results = RaceResult.objects.filter(race_cat__in=racecats_since, position__lte=3, team=self)
         return {'win_results': win_results, 'podium_results': podium_results}
 
+    def get_podiums_this_week(self, category=None):
+        racecats_since = None
+        racecats_since = RaceCat.objects.racecats_this_week(category)    
+        win_results = RaceResult.objects.filter(race_cat__in=racecats_since, position=1, team=self)
+        podium_results = RaceResult.objects.filter(race_cat__in=racecats_since, position__lte=3, team=self)
+        return {'win_results': win_results, 'podium_results': podium_results}
+
+    def get_podiums_prev_week(self, category=None):
+        racecats_since = RaceCat.objects.racecats_prev_week(category)
+        win_results = RaceResult.objects.filter(race_cat__in=racecats_since, position=1, team=self)
+        podium_results = RaceResult.objects.filter(race_cat__in=racecats_since, position__lte=3, team=self)
+        return {'win_results': win_results, 'podium_results': podium_results}
     
     def get_wins_since(self, start_time):
         racecats_since = RaceCat.objects.racecats_since(start_time)
