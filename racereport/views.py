@@ -44,7 +44,7 @@ def this_week_team_results(request, team_name, category=None):
         return render(request, 'racereport/error.html', context)
 
     results = team.get_podiums_this_week(category)
-    racecat_wins = RaceCat.objects.filter(pk__in=results['win_results'].values('race_cat')).annotate(racer_count=Count('raceresult'))
+    racecat_wins = RaceCat.objects.filter(pk__in=results['win_results'].values('race_cat')).annotate(racer_count=Count('raceresult')).order_by('-race__event_datetime')
     '''
     racecat_wins = []
     for race_result in results['win_results']:
