@@ -142,7 +142,7 @@ class TeamManager(models.Manager):
             team_this_week_results = team.get_podiums_this_week(category)
             team_prev_week_results = team.get_podiums_prev_week(category)
             team_last_24hr_results = team.get_podiums_last_24hrs(category)
-            team_all_results = team.get_all_podiums()
+            team_all_results = team.get_all_podiums(category)
             team_ranking.append({
                 "team": team,
                 "this_week_wins": team_this_week_results['win_results'],
@@ -159,9 +159,13 @@ class Team(models.Model):
     objects = TeamManager()
     name = models.CharField(max_length=200)
     
-    def get_all_podiums(self):
-        win_results = RaceResult.objects.filter(position=1, team=self)
-        podium_results = RaceResult.objects.filter(position__lte=3, team=self)
+    def get_all_podiums(self, category=None):
+        if category == None: 
+            win_results = RaceResult.objects.filter(position=1, team=self)
+            podium_results = RaceResult.objects.filter(position__lte=3, team=self)
+        else:
+            win_results = RaceResult.objects.filter(position=1, team=self, race_cat__category=category)
+            podium_results = RaceResult.objects.filter(position__lte=3, team=self, race_cat__category=category)
         return {'win_results': win_results, 'podium_results': podium_results}
 
 

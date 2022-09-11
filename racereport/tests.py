@@ -4,8 +4,7 @@ from django.test import TestCase
 from racereport.models import Race,RaceCat,RaceResult
 
 class ImportRaceTestCase(TestCase):
-    def setup(self):
-        
+    def setup(self):  
         pass
         
         # expected rows:

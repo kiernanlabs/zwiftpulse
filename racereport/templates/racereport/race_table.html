@@ -1,0 +1,39 @@
+<table>
+    <tr>
+        <th>Event</th>
+        <th>Podium</th>
+    </tr>
+    {% for race_cat in racecats %}
+        <tr>
+            <td>
+                {{race_cat.race.event_name}} [{{race_cat.category}}]
+                <br>
+                <br>
+                Total ZwiftPower Registered Finishers: {{race_cat.racer_count}}
+                <small>
+                <br>{{race_cat.race.event_datetime}}
+                <br><a href="https://zwiftpower.com/events.php?zid={{ race_cat.event_id }}">link</a>
+                </small>
+            </td>
+            <td>
+                <table>
+                    <tr>
+                        <td>1st</td>
+                        <td>{{race_cat.first.racer_name}}</td>
+                        <td><a href='/team/{{race_cat.first.team.name}}/{{category|default:""}}'>{{race_cat.first.team.name}}</a></td>
+                    </tr>
+                    <tr>
+                        <td>2nd</td>
+                        <td>{{race_cat.second.racer_name}}</td>
+                        <td><a href='/team/{{race_cat.second.team.name}}/{{category|default:""}}'>{{race_cat.second.team.name}}</a></td>
+                    </tr>
+                    <tr>
+                        <td>3rd</td>
+                        <td>{{race_cat.third.racer_name}}</td>
+                        <td><a href='/team/{{race_cat.third.team.name}}/{{category|default:""}}'>{{race_cat.third.team.name}}</a></td>
+                    </tr>
+                </table>
+            </td>             
+        </tr>
+    {% endfor %}
+</table>

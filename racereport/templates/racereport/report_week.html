@@ -1,4 +1,5 @@
 {% extends "racereport/base.html" %}
+{% load racereport_tags %}
 
 {% block status %}
     <span><small>
@@ -9,20 +10,20 @@
 
 {% block teams %}
     <h4>
-        Top 10 Teams, this week
+        Top 10 Teams, this week (Mon->Sun GMT)
     </h4>
     <table>
         <tr>
             <th>Rank</th>
             <th>Team</th>
-            <th>Total wins this week <br> (last 24hr wins)</th>
+            <th>Wins this week<br><small>(last 24hr wins)</small></th>
             <th>Last week total wins</th>
             <th>All time wins</th>
         </tr>
         {% for team in top_teams %}
             <tr>
                 <td>{{forloop.counter0}}</td>
-                <td>{{team.team.name}}</td>
+                <td><a href='/team/{{team.team.name}}/{{category|default:""}}'>{{team.team.name}}</a></td>
                 <td>{{team.this_week_wins_count}} <small>[{{team.last_24hrs_wins_count|stringformat:"+d"}}]</small></td>
                 <td>{{team.prev_week_wins_count}}</td>
                 <td>{{team.all_time_wins}}</td>             
@@ -33,45 +34,8 @@
 
 {% block races %}
     <h4>
-        Top 5 Races by Zwift Power racers, last 24hrs ({{ racecats|length }})
+        Top 5 Races by Zwift Power racers, last 24hrs
     </h4>
-    <table>
-        <tr>
-            <th>Event</th>
-            <th>Podium</th>
-        </tr>
-        {% for race_cat in racecats %}
-            <tr>
-                <td>
-                    {{race_cat.race.event_name}} [{{race_cat.category}}]
-                    <br>
-                    <br>
-                    Total ZwiftPower Registered Finishers: {{race_cat.racer_count}}
-                    <small>
-                    <br>{{race_cat.race.event_datetime}}
-                    <br><a href="https://zwiftpower.com/events.php?zid={{ race_cat.event_id }}">link</a>
-                    </small>
-                </td>
-                <td>
-                    <table>
-                        <tr>
-                            <td>1st</td>
-                            <td>{{race_cat.first.racer_name}}</td>
-                            <td>{{race_cat.first.team.name}}</td>
-                        </tr>
-                        <tr>
-                            <td>2nd</td>
-                            <td>{{race_cat.second.racer_name}}</td>
-                            <td>{{race_cat.second.team.name}}</td>
-                        </tr>
-                        <tr>
-                            <td>3rd</td>
-                            <td>{{race_cat.third.racer_name}}</td>
-                            <td>{{race_cat.third.team.name}}</td>
-                        </tr>
-                    </table>
-                </td>             
-            </tr>
-        {% endfor %}
-    </table>
+    {% display_racecats racecats%}
+
 {% endblock races %}

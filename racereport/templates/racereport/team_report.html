@@ -1,0 +1,12 @@
+{% extends "racereport/base.html" %}
+{% load racereport_tags %}
+
+{% block status %}
+{% endblock status %}
+
+{% block races %}
+    <h4>
+        Wins this week by Zwift Power racers on team {{team.name}}
+    </h4>
+    {% display_racecats racecats %}
+{% endblock races %}
