@@ -3,8 +3,7 @@
 
 {% block status %}
     <span><small>
-        <p>Last race imported: [{{last_race_imported.event_id}}] {{last_race_imported}} [{{last_race_imported.event_datetime|date:'Y-m-d H:i T'}}]</p>
-        <p>Most recent race imported: [{{most_recent_race_imported.event_id}}] {{most_recent_race_imported}} [{{most_recent_race_imported.event_datetime|date:'Y-m-d H:i T'}}]</p>
+        {% display_scrape_report %}
     </small></span> 
 {% endblock status %}
 
@@ -34,7 +33,7 @@
 
 {% block races %}
     <h4>
-        Top 5 Races by number of Zwift Power racers, last 24hrs
+        Most competitive races (based on zp race quality), last 24hrs
     </h4>
     {% display_racecats racecats%}
 

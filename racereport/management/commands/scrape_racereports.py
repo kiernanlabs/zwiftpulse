@@ -1,5 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
-from racereport.models import Race, RaceCat, RaceResult, Team
+from django.utils import timezone
+
+from racereport.models import Race, RaceCat, RaceResult, Team, ScrapeReport
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -54,6 +56,8 @@ class Command(BaseCommand):
         return {'options': opts, 'service': service}
 
     def handle(self, *args, **options):
+        scrape_report = ScrapeReport(scrape_start=timezone.now(), completed=False)
+        scrape_report.save()
         startTime = time.time()
         
         settings = self.initialize_driver_settings()
@@ -104,6 +108,12 @@ class Command(BaseCommand):
             logger.info(f"==== [Run Report:{datetime.now(pytz.timezone('US/Eastern'))}] events with scrape errors:")
             for errorUrl in finishErrorURLs:
                 logger.info(f'==== [Run Report] * {errorUrl}')
+            
+            scrape_report.completed = True
+            scrape_report.scrape_end = timezone.now()
+            scrape_report.count_successful = successFinishes
+            scrape_report.save()
+            logger.info(f"==== [Scrape Report Object:{scrape_report}")
 
     '''===CORE SCRAPING FUNCTIONS==='''    
     '''Returns list of URLS to scrape'''    

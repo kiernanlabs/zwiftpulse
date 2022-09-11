@@ -8,12 +8,15 @@
             <td>
                 {{race_cat.race.event_name}} [{{race_cat.category}}]
                 <br>
-                <br>
-                Total ZwiftPower Registered Finishers: {{race_cat.racer_count}}
                 <small>
                 <br>{{race_cat.race.event_datetime}}
                 <br><a href="https://zwiftpower.com/events.php?zid={{ race_cat.event_id }}">link</a>
                 </small>
+                <br>
+                <br>
+                Race Quality: {{race_cat.race_quality}}
+                <br>
+                ZP Finishers: {{race_cat.racer_count}}
             </td>
             <td>
                 <table>
@@ -33,6 +36,12 @@
                         <td><a href='/team/{{race_cat.third.team.name}}/{{category|default:""}}'>{{race_cat.third.team.name}}</a></td>
                     </tr>
                 </table>
+                Notable Racers (based on ZP Rank)
+                <ul>
+                    {% for racer in race_cat.top_three_racers %}
+                        <li>{{racer.racer_name}} [<a href='/team/{{racer.team.name}}/{{category|default:""}}'>{{racer.team.name}}</a>] zp rank: {{racer.zp_rank_before}}</li>
+                    {% endfor %}
+                </ul>
             </td>             
         </tr>
     {% endfor %}

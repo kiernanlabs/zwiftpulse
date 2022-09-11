@@ -1,0 +1,12 @@
+{% extends "racereport/base.html" %}
+{% load racereport_tags %}
+
+{% block status %}
+    <ul>
+        {% for scrape in scrape_reports %}
+            <li>
+                {{scrape.scrape_start}} :: {{scrape.completed}}:{{scrape.count_successful}} :: {{scrape.scrape_end}}
+            </li>
+        {% endfor %}
+    </ul>   
+{% endblock status %}

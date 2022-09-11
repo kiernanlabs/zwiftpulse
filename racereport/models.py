@@ -5,6 +5,16 @@ from django.db import models
 from django.db.models import Count, Min
 
 
+class ScrapeReport(models.Model):
+    scrape_start = models.DateTimeField()
+    scrape_end = models.DateTimeField(default=None, blank=True, null=True)
+    completed = models.BooleanField(default=False)
+    count_successful = models.IntegerField(default=0, blank=True, null=True)
+    
+    def __str__(self):
+        return f"=== {self.scrape_start} :: [{self.completed} - {self.count_successful} successful] completed: {self.scrape_end}"
+
+
 
 class Race(models.Model):
     event_id = models.IntegerField()
@@ -98,14 +108,27 @@ class RaceCat(models.Model):
         if len(query_set)>0: return query_set[0]
         
         return None 
+    
     @property
     def podium(self):
         return RaceResult.objects.filter(race_cat=self, position__lte=3)
 
     @property
+    def top_three_racers(self):
+        query_set = RaceResult.objects.filter(race_cat=self, zp_rank_before__gte=1).order_by('zp_rank_before')
+        if len(query_set)>0: return query_set[:3]
+
+        return None
+
+    @property
     def event_id(self):
         return self.race.event_id
     
+    @property
+    def race_quality(self):
+        if self.first.zp_rank_event > 0: return self.first.zp_rank_event
+        return 999
+
     def __str__(self):
         return f'[{self.category}] {self.race}'
 
