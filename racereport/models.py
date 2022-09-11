@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from nis import cat
 from django.utils import timezone
 from django.db import models
 from django.db.models import Count, Min
@@ -136,7 +137,9 @@ class TeamManager(models.Manager):
         return sorted(team_ranking,key=lambda d: d['24hr_wins_count'], reverse=True)[:11]
     
     def get_top_10_teams_this_week(self, category=None):
-        teams = Team.objects.all()
+        racecats_this_week = RaceCat.objects.racecats_this_week(category)
+        this_week_podiums = RaceResult.objects.filter(race_cat__in=racecats_this_week, position__lte=3)
+        teams = Team.objects.filter(pk__in=this_week_podiums.values('team'))
         team_ranking = []
         for team in teams:
             team_this_week_results = team.get_podiums_this_week(category)
