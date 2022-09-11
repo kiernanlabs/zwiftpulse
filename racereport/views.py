@@ -29,7 +29,7 @@ def last_24hrs(request, category=None):
     return render(request, 'racereport/report.html', context)
 
 def this_week(request, category=None):
-    race_cats = RaceCat.objects.racecats_last24hrs(category).annotate(racer_count=Count('raceresult')).order_by("-racer_count")[:5]
+    race_cats = RaceCat.objects.racecats_last24hrs(category).annotate(racer_count=Count('raceresult')).order_by("-racer_count")
     race_cats_quality = sorted(race_cats, key=lambda x: x.race_quality)[:5]
     top_teams = Team.objects.get_top_10_teams_this_week(category)
     
