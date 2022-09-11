@@ -33,8 +33,13 @@
 
 {% block races %}
     <h4>
+        Largest races (based on zp finishers), last 24hrs
+    </h4>
+    {% display_racecats racecats_size%}
+
+    <h4>
         Most competitive races (based on zp race quality), last 24hrs
     </h4>
-    {% display_racecats racecats%}
+    {% display_racecats racecats_quality%}
 
 {% endblock races %}

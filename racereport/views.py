@@ -31,12 +31,13 @@ def last_24hrs(request, category=None):
 def this_week(request, category=None):
     race_cats = RaceCat.objects.racecats_last24hrs(category).annotate(racer_count=Count('raceresult')).order_by("-racer_count")
     race_cats_quality = sorted(race_cats, key=lambda x: x.race_quality)[:5]
+    race_cats_size = race_cats[:5]
     top_teams = Team.objects.get_top_10_teams_this_week(category)
     
     last_race_imported = Race.objects.last()
     most_recent_race_imported = Race.objects.latest('event_datetime')
     
-    context = {'racecats': race_cats_quality, 'top_teams': top_teams, 'last_race_imported': last_race_imported, 'most_recent_race_imported': most_recent_race_imported, 'category':category}
+    context = {'racecats_quality': race_cats_quality, 'racecats_size': race_cats_size, 'top_teams': top_teams, 'last_race_imported': last_race_imported, 'most_recent_race_imported': most_recent_race_imported, 'category':category}
     return render(request, 'racereport/report_week.html', context)
 
 def this_week_team_results(request, team_name, category=None):
