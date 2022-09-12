@@ -184,6 +184,10 @@ class TeamManager(models.Manager):
 class Team(models.Model):
     objects = TeamManager()
     name = models.CharField(max_length=200)
+
+    @property
+    def url_name(self):
+        return self.name.replace('/','-slash-')
     
     def get_all_podiums(self, category=None):
         if category == None: 

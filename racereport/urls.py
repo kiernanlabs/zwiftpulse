@@ -1,13 +1,34 @@
 from django.urls import path
-
+from django_distill import distill_path
 from . import views
+from racereport.models import Race, RaceCat, RaceResult, Team, ScrapeReport
+from django.db.models import Count, Min
+from django.utils.html import conditional_escape
+
+
+def get_index():
+    return None
+
+def get_week_reports():
+    for category in ["A", "B", "C", "D", "E"]:
+        yield {'category':category}
+
+def get_team_pages():
+    for team in Team.objects.all().annotate(raceresult_count=Count('raceresult')).order_by('-raceresult_count')[:100]:
+        team_url_name = team.url_name
+        yield {'team_url_name':team_url_name}
+
+def get_team_pages_category():
+    for team in Team.objects.all().annotate(raceresult_count=Count('raceresult')).order_by('-raceresult_count')[:100]:
+        for category in ["A", "B", "C", "D", "E"]:
+            yield {'team_url_name':team.url_name, 'category':category}
+
 
 urlpatterns = [
-    path('', views.this_week, name='this_week'),
-    path('logs', views.last_100_scrapes, name='last_scrapes'),
-    path('today/<str:category>', views.last_24hrs, name='last_24hrs'),
-    path('week/', views.this_week, name='this_week'),
-    path('week/<str:category>', views.this_week, name='this_week'),
-    path('team/<str:team_name>/', views.this_week_team_results, name='team_results'),
-    path('team/<str:team_name>/<str:category>', views.this_week_team_results, name='team_results'),
+    distill_path('', views.this_week, name='this_week', distill_file='index.html'),
+    distill_path('logs', views.last_100_scrapes, name='last_scrapes'),
+    distill_path('week/', views.this_week, name='this_week', distill_file='week.html'),
+    distill_path('week/<str:category>', views.this_week, name='this_week', distill_func=get_week_reports),
+    distill_path('team/<str:team_url_name>/', views.this_week_team_results, name='team_results', distill_func=get_team_pages),
+    distill_path('team/<str:team_url_name>/<str:category>', views.this_week_team_results, name='team_results', distill_func=get_team_pages_category),
 ]

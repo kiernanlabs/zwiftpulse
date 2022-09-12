@@ -40,7 +40,8 @@ def this_week(request, category=None):
     context = {'racecats_quality': race_cats_quality, 'racecats_size': race_cats_size, 'top_teams': top_teams, 'last_race_imported': last_race_imported, 'most_recent_race_imported': most_recent_race_imported, 'category':category}
     return render(request, 'racereport/report_week.html', context)
 
-def this_week_team_results(request, team_name, category=None):
+def this_week_team_results(request, team_url_name, category=None):
+    team_name = team_url_name.replace('-slash-','/')
     try:
         team = Team.objects.get(name=team_name)
         print(f"Found team: {team_name}")

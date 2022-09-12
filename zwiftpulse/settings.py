@@ -32,6 +32,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+DISTILL_PUBLISH = {
+    'default': {
+        'ENGINE': 'django_distill.backends.amazon_s3',
+        'PUBLIC_URL': 'http://race.zwiftpulse.com/',
+        'ACCESS_KEY_ID': env('S3_ACCESS_KEY'),
+        'SECRET_ACCESS_KEY': env('S3_SECRET_KEY'),
+        'BUCKET': 'race.zwiftpulse.com',
+    },
+}
 
 # Application definition
 
@@ -44,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'racereport.apps.RacereportConfig',
     'django_extensions',
+    'django_distill',
 ]
 
 MIDDLEWARE = [
