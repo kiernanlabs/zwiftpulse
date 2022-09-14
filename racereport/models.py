@@ -25,6 +25,10 @@ class Race(models.Model):
 
     def __str__(self):
         return self.event_name
+    
+    @property
+    def hours_ago(self):
+        return round((timezone.now() - self.event_datetime).seconds/60/60)
 
 class RaceCatManager(models.Manager):
     def top_5_races(self, start_time):

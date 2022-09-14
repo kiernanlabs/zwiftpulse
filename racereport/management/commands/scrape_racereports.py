@@ -141,8 +141,14 @@ class Command(BaseCommand):
         for link in links:
             # only pull new races - unclear if needed
             event_id = self.toEventID(link.get_attribute("href"))
-            if len(Race.objects.filter(event_id=event_id)) == 0:
+            race_objs = Race.objects.filter(event_id=event_id)
+            if len(race_objs) == 0:
                 urls.append(link.get_attribute("href"))
+            else:
+                race_cats = RaceCat.objects.filter(race=race_objs[0])
+                if len(race_cats) > 0 and race_cats[0].race_quality == 999 and race_objs[0].hours_ago < 24:
+                    logger.info(f"---adding {race_objs[0]} to list of urls due to missing race_quality")
+                    urls.append(link.get_attribute("href"))
         
         return urls
     
@@ -373,12 +379,12 @@ class Command(BaseCommand):
         team_obj = Team.objects.get_or_create(name=team_name)
 
         
-        race_result = RaceResult.objects.get_or_create(
+        race_result = RaceResult.objects.update_or_create(
             race_cat = race_cat_row,
             racer_name = row['Name'],
             defaults={'team':team_obj[0], 'position': position, 'time_ms': row['Time'], 'zp_rank_before': zp_rank_before, 'zp_rank_event': zp_rank_event}
         )[0]
-
+        
         logger.debug(f'Successfully created: {race_result} | position {race_result.position}')
         
     
