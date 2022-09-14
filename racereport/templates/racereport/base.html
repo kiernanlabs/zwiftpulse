@@ -11,7 +11,7 @@
 </head>
 <nav>
     <a href="/week/">All Categories</a>
-    |
+    | Category Specific Views:
     <a href="/week/A">A</a>
     <a href="/week/B">B</a>
     <a href="/week/C">C</a>
@@ -23,16 +23,10 @@
         <h1>The Pulse ~ {{category|default:"All Categories"}}</h1>
     </header>
     <main>
-        <p>
-            What is this?  Every day in Zwift racing, thousands of riders push themselves to their physical limits so their virtual avatar moves a few pixels faster than a stranger half a world away.  
-            The pulse is about celebrating each of those highly individual stories, and weaving them into a collection of bigger narratives on which communities are built.  
-        </p>
-        <p>
-            We will get to the story-telling, as a first step it's about using data to understand the big picture of <strong>"what happened yesterday in Zwift Racing?"</strong>
-        </p>
-        <hr>
         {% block status %}
-            <p>Current Status: n/a</p>
+            <span><small>
+                {% display_scrape_report %}
+            </small></span> 
         {% endblock status %}
 
         {% block teams %}
