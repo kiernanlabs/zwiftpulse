@@ -27,8 +27,8 @@ def get_team_pages_category():
 urlpatterns = [
     distill_path('', views.this_week, name='this_week', distill_file='index.html'),
     distill_path('logs', views.last_100_scrapes, name='last_scrapes'),
-    distill_path('week/', views.this_week, name='this_week', distill_file='week.html'),
+    distill_path('week', views.this_week, name='this_week'),
     distill_path('week/<str:category>', views.this_week, name='this_week', distill_func=get_week_reports),
-    distill_path('team/<str:team_url_name>/', views.this_week_team_results, name='team_results', distill_func=get_team_pages),
+    distill_path('team/<str:team_url_name>', views.this_week_team_results, name='team_results', distill_func=get_team_pages),
     distill_path('team/<str:team_url_name>/<str:category>', views.this_week_team_results, name='team_results', distill_func=get_team_pages_category),
 ]
