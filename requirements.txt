@@ -19,7 +19,7 @@ idna==3.3
 ipython==7
 jedi==0.18.1
 matplotlib-inline==0.1.6
-numpy==1.23.2
+numpy==1.21
 outcome==1.2.0
 pandas==1.4.3
 parso==0.8.3
