@@ -16,7 +16,7 @@
         {% for team in top_teams %}
             <tr>
                 <td>{{forloop.counter0}}</td>
-                <td><a href='/team/{{team.team.url_name}}/{{category|default:""}}'>{{team.team.name}}</a></td>
+                <td><a href='/team/{{team.team.url_name}}/{{category|default:"all"}}'>{{team.team.name}}</a></td>
                 <td>{{team.this_week_wins_count}} <small>[{{team.last_24hrs_wins_count|stringformat:"+d"}}]</small></td>
                 <td>{{team.prev_week_wins_count}}</td>
                 <td>{{team.all_time_wins}}</td>             

@@ -1,3 +1,4 @@
+from nis import cat
 import django_tables2 as tables
 from datetime import datetime, timedelta
 from django.utils import timezone
@@ -42,11 +43,12 @@ def this_week(request, category=None):
 
 def this_week_team_results(request, team_url_name, category=None):
     team_name = team_url_name.replace('-slash-','/')
+    if category=="all": category=None
     try:
         team = Team.objects.get(name=team_name)
-        print(f"Found team: {team_name}")
+        #print(f"Found team: {team_name}")
     except:
-        print(f"Can't find team: {team_name}")        
+        #print(f"Can't find team: {team_name}")        
         context = {'error': "Error"}
         return render(request, 'racereport/error.html', context)
 
