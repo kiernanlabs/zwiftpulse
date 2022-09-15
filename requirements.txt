@@ -16,7 +16,7 @@ django-tables2==2.4.1
 executing==0.10.0
 h11==0.13.0
 idna==3.3
-ipython==8.4.0
+ipython==7
 jedi==0.18.1
 matplotlib-inline==0.1.6
 numpy==1.23.2
