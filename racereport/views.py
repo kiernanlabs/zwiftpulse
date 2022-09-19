@@ -43,6 +43,8 @@ def this_week(request, category=None):
 
 def this_week_team_results(request, team_url_name, category=None):
     team_name = team_url_name.replace('-slash-','/')
+    team_name = team_name.replace('-space-',' ')
+
     if category=="all": category=None
     try:
         team = Team.objects.get(name=team_name)

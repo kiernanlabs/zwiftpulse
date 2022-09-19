@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models import Count, Min
 
 
+
 class ScrapeReport(models.Model):
     scrape_start = models.DateTimeField()
     scrape_end = models.DateTimeField(default=None, blank=True, null=True)
@@ -191,8 +192,10 @@ class Team(models.Model):
 
     @property
     def url_name(self):
-        return self.name.replace('/','-slash-')
-    
+        result = self.name.replace('/','-slash-')
+        result = result.replace(' ','-space-')
+        return result
+
     def get_all_podiums(self, category=None):
         if category == None: 
             win_results = RaceResult.objects.filter(position=1, team=self)

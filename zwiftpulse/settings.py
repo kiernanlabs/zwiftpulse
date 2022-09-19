@@ -34,10 +34,9 @@ ALLOWED_HOSTS = ['*']
 
 DISTILL_PUBLISH = {
     'default': {
-        'ENGINE': 'django_distill.backends.amazon_s3',
-        'PUBLIC_URL': 'http://race.zwiftpulse.com/',
-        'ACCESS_KEY_ID': env('S3_ACCESS_KEY'),
-        'SECRET_ACCESS_KEY': env('S3_SECRET_KEY'),
+        'ENGINE': 'django_distill.backends.google_storage',
+        'PUBLIC_URL': 'https://storage.googleapis.com/race.zwiftpulse.com/',
+        'JSON_CREDENTIALS': 'zwiftpulse-a378d7db3d08.json',
         'BUCKET': 'race.zwiftpulse.com',
     },
 }
