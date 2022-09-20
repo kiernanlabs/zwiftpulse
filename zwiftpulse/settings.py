@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'racereport.apps.RacereportConfig',
     'django_extensions',
     'django_distill',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

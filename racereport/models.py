@@ -194,6 +194,7 @@ class Team(models.Model):
     def url_name(self):
         result = self.name.replace('/','-slash-')
         result = result.replace(' ','-space-')
+        result = result.replace('|','-pipe-')
         return result
 
     def get_all_podiums(self, category=None):
@@ -255,5 +256,56 @@ class RaceResult(models.Model):
     zp_rank_before = models.FloatField()
     zp_rank_event = models.FloatField()
 
+
     def __str__(self):
         return f'[{self.position}][{self.race_cat.category}] {self.racer_name}'
+
+class NarrativeManager(models.Manager):
+    def create_24hr_wins_narrative(self, team, category, weekly_place):
+        podiums = team.get_podiums_last_24hrs(category)
+        last_week_podiums = team.get_podiums_prev_week(category)
+        narrative = Narrative(
+            type = "24hr wins",
+            actor = team,
+            arena = category,
+            action = len(podiums['win_results']),
+            outcome = weekly_place,
+            context = len(last_week_podiums['win_results']),
+        )
+        narrative.save()
+
+        for race_result in podiums['win_results']:
+            narrative.why.add(race_result)
+
+class Narrative(models.Model):
+    type = models.CharField(max_length=200) # team 24hr wins
+    actor = models.ForeignKey(Team, on_delete=models.CASCADE) # team
+    arena = models.CharField(max_length=200) # category
+    action = models.IntegerField() # wins
+    outcome = models.IntegerField() # weekly place
+    context = models.IntegerField() # last week wins
+    why = models.ManyToManyField(RaceResult) # list of raceresults
+    impact_score = models.IntegerField(default=0) # number of wins
+    surprise_score = models.IntegerField(default=0) # difference between wins and last week wins
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = NarrativeManager()
+    
+    def __str__(self):
+        return f"{self.actor} wins {self.action} races in the last 24hrs in {self.arena} category.  Moving into {self.outcome} this week.  Last week {self.actor} won {self.context} total races."
+    
+    @property
+    def currently_active(self):
+        today = timezone.now()
+        if today.strftime("%V") == self.created_at.strftime("%V"): return True
+        return False
+    
+    def update(self, weekly_place):
+        podiums = self.actor.get_podiums_last_24hrs(self.arena)
+        self.action = len(podiums['win_results'])
+        self.outcome = weekly_place
+        self.save()
+
+
+

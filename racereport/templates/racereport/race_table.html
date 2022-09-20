@@ -1,11 +1,13 @@
 {% load racereport_tags %}
+{% load humanize %}
+
 {% for race_cat in racecats %}
     <div class="card block">
         <header class="card-header">
             <p class="card-header-title">
                 {{race_cat.race.event_name}}
                 <br>
-                {{race_cat.race.event_datetime}}
+                {{race_cat.race.event_datetime}} ({{race_cat.race.event_datetime|naturaltime}})
             </p>
             <span class="card-header-icon">
                 <span class="tag is-rounded {{race_cat.category|category_color}}">{{race_cat.category}}</span>
