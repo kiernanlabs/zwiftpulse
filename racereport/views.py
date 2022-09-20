@@ -62,7 +62,7 @@ def this_week_team_results(request, team_url_name, category=None):
         race_cat = race_result.race_cat
     '''
 
-    context = {'racecats': racecat_wins, 'team':team}
+    context = {'racecats': racecat_wins, 'team':team, 'category':category}
     return render(request, 'racereport/team_report.html', context)
 
 def scrape_reports(request):

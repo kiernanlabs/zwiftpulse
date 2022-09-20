@@ -1,20 +1,25 @@
-{% load racereport_tags %}
-{% for race_cat in racecats %}
-    <div class="card block">
-        <header class="card-header">
-            <p class="card-header-title">
-                {{race_cat.race.event_name}}
+<table>
+    <tr>
+        <th>Event</th>
+        <th>Podium</th>
+    </tr>
+    {% for race_cat in racecats %}
+        <tr>
+            <td>
+                {{race_cat.race.event_name}} [{{race_cat.category}}]
                 <br>
-                {{race_cat.race.event_datetime}}
-            </p>
-            <span class="card-header-icon">
-                <span class="tag is-rounded {{race_cat.category|category_color}}">{{race_cat.category}}</span>
-            </span>
-        </header>
-        <div class="card-content">
-            <div class="content">
-                <p>Podium:</p>
-                <table class="table">
+                <small>
+                <br>{{race_cat.race.event_datetime}}
+                <br><a href="https://zwiftpower.com/events.php?zid={{ race_cat.event_id }}">link</a>
+                </small>
+                <br>
+                <br>
+                Race Quality: {{race_cat.race_quality}}
+                <br>
+                ZP Finishers: {{race_cat.racer_count}}
+            </td>
+            <td>
+                <table>
                     <tr>
                         <td>1st</td>
                         <td>{{race_cat.first.racer_name}}</td>
@@ -31,18 +36,13 @@
                         <td><a href='/team/{{race_cat.third.team.url_name}}/{{category|default:"all"}}'>{{race_cat.third.team.name}}</a></td>
                     </tr>
                 </table>
-                <p>Notable Racers (based on ZP Rank):</p>
+                Notable Racers (based on ZP Rank)
                 <ul>
                     {% for racer in race_cat.top_three_racers %}
                         <li>{{racer.racer_name}} [<a href='/team/{{racer.team.url_name}}/{{category|default:"all"}}'>{{racer.team.name}}</a>] zp rank: {{racer.zp_rank_before}}</li>
                     {% endfor %}
                 </ul>
-            </div>
-        </div>
-        <footer class="card-footer">
-            <p class="card-footer-item">ZP Finishers: {{race_cat.racer_count}}</p>
-            <p class="card-footer-item">Race Quality: {{race_cat.race_quality}}</p>
-            <a class="card-footer-item" href="https://zwiftpower.com/events.php?zid={{ race_cat.event_id }}">ZwiftPower link</a>
-        </footer>
-    </div>    
-{% endfor %}
+            </td>             
+        </tr>
+    {% endfor %}
+</table>

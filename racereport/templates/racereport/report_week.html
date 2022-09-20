@@ -2,38 +2,47 @@
 {% load racereport_tags %}
 
 {% block teams %}
-    <h4>
-        Top 10 Teams, this week (Mon->Sun GMT)
-    </h4>
-    <table>
-        <tr>
-            <th>Rank</th>
-            <th>Team</th>
-            <th>Wins this week<br><small>(last 24hr wins)</small></th>
-            <th>Last week total wins</th>
-            <th>All time wins</th>
-        </tr>
-        {% for team in top_teams %}
+    <div class="box">
+        <h1 class="title">Top 10 Teams this week</h1>
+        <h2 class="subtitle">(Mon->Sun GMT)</h2>
+        <table class="table is-hoverable is-fullwidth">
             <tr>
-                <td>{{forloop.counter0}}</td>
-                <td><a href='/team/{{team.team.url_name}}/{{category|default:"all"}}'>{{team.team.name}}</a></td>
-                <td>{{team.this_week_wins_count}} <small>[{{team.last_24hrs_wins_count|stringformat:"+d"}}]</small></td>
-                <td>{{team.prev_week_wins_count}}</td>
-                <td>{{team.all_time_wins}}</td>             
+                <th>Rank</th>
+                <th>Team</th>
+                <th>Wins last 24hrs</th>
+                <th>Total wins this week</th>
+                <th>Total wins last week</th>
             </tr>
-        {% endfor %}
-    </table>
+            {% for team in top_teams %}
+                <tr>
+                    <td>{{forloop.counter0}}</td>
+                    <td><a href='/team/{{team.team.url_name}}/{{category|default:"all"}}'>{{team.team.name}}</a></td>
+                    <td>{{team.last_24hrs_wins_count|stringformat:"+d"}}</td>
+                    <td class="has-background-primary-light has-text-primary-dark has-text-weight-bold">{{team.this_week_wins_count}}
+                    <td>{{team.prev_week_wins_count}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
 {% endblock teams %}
 
 {% block races %}
-    <h4>
-        Largest races (based on zp finishers), last 24hrs
-    </h4>
-    {% display_racecats racecats_size%}
+    <div class="columns">
+        <div class="column">
+            <section class="section">
+                <h1 class="title">Largest races last 24hrs</h1>
+                <h2 class="subtitle">(based on zp finishers)</h2>
+                
+                {% display_racecats racecats_size%}
+            </section>
+        </div>
+        <div class="column">
+            <section class="section">    
+                <h1 class="title">Most competitive races last 24hrs</h1>
+                <h2 class="subtitle">(based on zp race quality)</h2>
 
-    <h4>
-        Most competitive races (based on zp race quality), last 24hrs
-    </h4>
-    {% display_racecats racecats_quality%}
-
+                {% display_racecats racecats_quality%}
+            </section>
+        </div>
+    </div>
 {% endblock races %}

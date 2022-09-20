@@ -1,9 +1,15 @@
 {% extends "racereport/base.html" %}
 {% load racereport_tags %}
+{% block title %}
+    <section class="hero is-small {{category|category_color}}">
+        <div class="hero-body">
+            <p class="title has-text-centered">{{team.name}}: Wins this Week ~ {{category|category_title}}</p>
+        </div>
+    </section>
+{% endblock title %}
 
 {% block races %}
-    <h4>
-        Wins this week by Zwift Power racers on team {{team.name}}
-    </h4>
-    {% display_racecats racecats %}
+    <section class="section">
+        {% display_racecats racecats %}
+    </section>
 {% endblock races %}

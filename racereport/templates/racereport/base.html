@@ -4,37 +4,88 @@
 <head>
     {% load static %}
     {% load racereport_tags %}
-
-    <link rel="icon"href="{% static 'favicon.ico' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{% static 'favicon.ico' %}">
     <title>The Pulse</title>
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 </head>
-<nav>
-    <a href="/">All Categories</a>
-    | Category Specific Views:
-    <a href="/week/A">A</a>
-    <a href="/week/B">B</a>
-    <a href="/week/C">C</a>
-    <a href="/week/D">D</a>
-    <a href="/week/E">E</a>
-  </nav>
+<nav class="navbar is-dark has-shadow" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        ZwfitPulse
+      </a>
+  
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+  
+    <div class="navbar-menu" id="navMenu">
+        <div class="navbar-start">
+            <a class="navbar-item {{None|active_nav:category}}" href="/">
+                All Categories
+            </a>
+            <hr class="nabar-divider"></hr>
+            <div class="navbar-item">
+                Category Specific Views:
+            </div>
+            <a class="navbar-item {{'A'|active_nav:category}} has-text-danger" href="/week/A">A</a>
+            <a class="navbar-item {{'B'|active_nav:category}} has-text-success" href="/week/B">B</a>
+            <a class="navbar-item {{'C'|active_nav:category}} has-text-info" href="/week/C">C</a>
+            <a class="navbar-item {{'D'|active_nav:category}} has-text-warning" href="/week/D">D</a>
+            <a class="navbar-item {{'E'|active_nav:category}}" href="/week/E">E</a>
+        </div>
+        <div class="navbar-end">
+            <div class="navbar-item tags has-addons">
+                <span class="tag is-info">Last import</span>
+                <span class="tag is-info is-light">{% display_scrape_report %}</span>
+            </div>
+        </div>
+    </div>
+</nav>
 <body>
-    <header>
-        <h1>The Pulse ~ {{category|default:"All Categories"}}</h1>
-    </header>
-    <main>
-        {% block status %}
-            <span><small>
-                {% display_scrape_report %}
-            </small></span> 
-        {% endblock status %}
+    {% block title %}
+    <section class="hero is-small {{category|category_color}}">
+        <div class="hero-body">
+            <p class="title has-text-centered">The Pulse ~ {{category|category_title}}</p>
+        </div>
+    </section>
+    {% endblock title %}
 
-        {% block teams %}
-        {% endblock teams %}
+    <section class="container">
+            {% block teams %}
+            {% endblock teams %}
 
-        {% block races %}
-        {% endblock races %}
-    </main>
+            {% block races %}
+            {% endblock races %}
+        </div>
+    </section>
 </body>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+    // Get all "navbar-burger" elements
+    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+    // Add a click event on each of them
+    $navbarBurgers.forEach( el => {
+    el.addEventListener('click', () => {
+
+        // Get the target from the "data-target" attribute
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+
+        // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+
+    });
+    });
+
+    });
+</script>
 
 </html>
