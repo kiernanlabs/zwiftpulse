@@ -43,6 +43,7 @@
             <a class="navbar-item {{'E'|active_nav:category}}" href="/week/E">E</a>
         </div>
         <div class="navbar-end">
+            <a class="navbar-item" href="/about">About</a>
             <a class="navbar-item" href="http://ttt.zwiftpulse.com">Tiago Town TTT Speed Calc</a>
             <div class="navbar-item tags has-addons">
                 <span class="tag is-info">Last import</span>
@@ -53,7 +54,7 @@
 </nav>
 <body>
     {% block title %}
-    <section class="hero is-small {{category|category_color}}">
+    <section class="hero is-small {{category|category_color}} block">
         <div class="hero-body">
             <p class="title has-text-centered">The Pulse ~ {{category|category_title}}</p>
         </div>
@@ -63,6 +64,9 @@
     <section class="container">
             {% block scrapes %}
             {% endblock scrapes %}
+
+            {% block content %}
+            {% endblock content %}
             
             {% block narratives %}
             {% endblock narratives %}

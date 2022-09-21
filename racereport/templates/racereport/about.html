@@ -1,7 +1,22 @@
-<p>
-    What is this?  Every day in Zwift racing, thousands of riders push themselves to their physical limits so their virtual avatar moves a few pixels faster than a stranger half a world away.  
-    The pulse is about celebrating each of those highly individual stories, and weaving them into a collection of bigger narratives on which communities are built.  
-</p>
-<p>
-    We will get to the story-telling, as a first step it's about using data to understand the big picture of <strong>"what happened yesterday in Zwift Racing?"</strong>
-</p>
+{% extends "racereport/base.html" %}
+{% load racereport_tags %}
+{% block title %}
+    <section class="hero is-small {{category|category_color}} block">
+        <div class="hero-body">
+            <p class="title has-text-centered">About ZwiftPulse</p>
+        </div>
+    </section>
+{% endblock title %}
+
+{% block content %}
+    <div class="box">
+        <p>
+            What is this?  Every day in Zwift racing, thousands of riders push themselves to their physical limits so their virtual avatar moves a few pixels faster than a stranger half a world away.  
+            The pulse is about celebrating each of those highly individual stories, and weaving them into a collection of bigger narratives on which communities are built.  
+        </p>
+        <p>
+            That seems hard.  As a first step it's about using data to understand the big picture of <strong>"what happened yesterday in Zwift Racing?"</strong>
+        </p>
+        <p> Questions? Thoughts? Rach out to Joe@kiernanlabs.com </p>
+    </div>
+{% endblock content %}

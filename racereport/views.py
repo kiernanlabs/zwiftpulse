@@ -14,6 +14,10 @@ import logging
 
 logger = logging.getLogger('main')
 
+def about(request):
+    context = {'category':None}
+    return render(request, 'racereport/about.html', context)
+
 def last_100_scrapes(request):
     scrape_reports = ScrapeReport.objects.all().order_by('-scrape_start')[:100]
     context = {'scrape_reports': scrape_reports, 'category':None}
