@@ -68,7 +68,7 @@ class Command(BaseCommand):
         for narrative in narratives:
             narrative.impact_score = (narrative.calc_impact() / max_impact)*100
             narrative.surprise_score = (narrative.calc_surprise() / max_surprise)*100
-            narrative.combined_score = (narrative.impact_score + narrative.surprise_score)/2
+            narrative.combined_score = (narrative.impact_score*2 + narrative.surprise_score)/3
             narrative.save()
             logger.debug(f"-- {narrative}: combined:{round(narrative.combined_score)} impact:{round(narrative.impact_score)}; surprise:{round(narrative.surprise_score)}")
             
