@@ -36,11 +36,13 @@
             <div class="navbar-item">
                 Category Specific Views:
             </div>
-            <a class="navbar-item {{'A'|active_nav:category}} has-text-danger" href="/week/A">A</a>
-            <a class="navbar-item {{'B'|active_nav:category}} has-text-success" href="/week/B">B</a>
-            <a class="navbar-item {{'C'|active_nav:category}} has-text-info" href="/week/C">C</a>
-            <a class="navbar-item {{'D'|active_nav:category}} has-text-warning" href="/week/D">D</a>
-            <a class="navbar-item {{'E'|active_nav:category}}" href="/week/E">E</a>
+            <a class="navbar-item {{'A'|active_nav:category}} has-text-danger" href="/{{report|default:'week'}}/A">A</a>
+            <a class="navbar-item {{'B'|active_nav:category}} has-text-success" href="/{{report|default:'week'}}/B">B</a>
+            <a class="navbar-item {{'C'|active_nav:category}} has-text-info" href="/{{report|default:'week'}}/C">C</a>
+            <a class="navbar-item {{'D'|active_nav:category}} has-text-warning" href="/{{report|default:'week'}}/D">D</a>
+            <a class="navbar-item {{'E'|active_nav:category}}" href="/{{report|default:'week'}}/E">E</a>
+            <a class="navbar-item {{'week'|active_nav2:report}}" href="/week/{{category|default:'all'}}">Top Teams this Week</a>
+            <a class="navbar-item {{'races'|active_nav2:report}}" href="/races/{{category|default:'all'}}">Top Races Last 7 Days</a>
         </div>
         <div class="navbar-end">
             <a class="navbar-item" href="/about">About</a>
@@ -111,6 +113,16 @@
 		});
 	}
 });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let podiumToggles = document.getElementsByClassName('podium-toggle');
+        for (let i = 0; i < podiumToggles.length; i++) {
+            podiumToggles[i].addEventListener('click', e => {
+                console.log(e.currentTarget.parentElement.parentElement.childNodes);
+                e.currentTarget.parentElement.parentElement.childNodes[3].classList.toggle('is-hidden');
+            });
+        }
+    });
 </script>
 
 </html>

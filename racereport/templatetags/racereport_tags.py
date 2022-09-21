@@ -23,6 +23,11 @@ def active_nav(value, category):
     if value == category: return "is-active"
     return ''
 
+@register.filter(name='active_nav2')
+def active_nav(value, report):
+    if value == report: return "is-active"
+    return ''
+
 @register.filter(name='category_title')
 def active_nav(category):
     if category == None: return "All Races"

@@ -1,7 +1,7 @@
 {% extends "racereport/base.html" %}
 {% load racereport_tags %}
 {% block title %}
-    <section class="hero is-small {{category|category_color}}">
+    <section class="hero is-small {{category|category_color}} block">
         <div class="hero-body">
             <p class="title has-text-centered">{{team.name}}: Wins this Week ~ {{category|category_title}}</p>
         </div>

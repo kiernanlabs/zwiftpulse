@@ -31,25 +31,25 @@ class Race(models.Model):
 
 class RaceCatManager(models.Manager):
     def top_5_races(self, start_time):
-        racecats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(race_time__gte=start_time).order_by('racer_count')
+        racecats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(race_time__gte=start_time, include=True).order_by('racer_count')
         return racecats[0:5]
     
     def top_5_races_cat(self, start_time, category):
-        racecats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(race_time__gte=start_time, category=category).order_by('racer_count')
+        racecats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(race_time__gte=start_time, category=category, include=True).order_by('racer_count')
         return racecats[0:5]
     
     def racecats_since(self, start_time):
-        return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(race_time__gte=start_time)
+        return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(race_time__gte=start_time, include=True)
     
     def racecats_this_week(self, category=None):
         today = timezone.now()
         beginning_of_week = today - timedelta(days=today.weekday(),hours=today.hour, minutes=today.minute, seconds=today.second, microseconds=today.microsecond)
         if category:
             return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
-                race_time__gte=beginning_of_week, category=category)
+                race_time__gte=beginning_of_week, category=category, include=True)
         else:
             return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
-                race_time__gte=beginning_of_week)
+                race_time__gte=beginning_of_week, include=True)
     
     def racecats_prev_week(self, category=None):
         today = timezone.now()
@@ -59,20 +59,20 @@ class RaceCatManager(models.Manager):
             return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
                 race_time__gte=beginning_of_last_week,
                 race_time__lte=end_of_last_week,
-                category=category)
+                category=category, include=True)
         else:
             return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
                 race_time__gte=beginning_of_last_week,
-                race_time__lte=end_of_last_week)
+                race_time__lte=end_of_last_week, include=True)
 
     def racecats_last24hrs(self, category=None):
         twenty_four_hours_ago = timezone.now() - timedelta(days = 1)
         if category:
             return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
-                race_time__gte=twenty_four_hours_ago, category=category)
+                race_time__gte=twenty_four_hours_ago, category=category, include=True)
         else:
             return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
-                race_time__gte=twenty_four_hours_ago)
+                race_time__gte=twenty_four_hours_ago, include=True)
 
     def racecats_prev24hrs(self, category=None):
         twenty_four_hours_ago = timezone.now() - timedelta(days = 1)
@@ -81,16 +81,45 @@ class RaceCatManager(models.Manager):
             return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
                 race_time__gte=forty_eight_hours_ago,
                 race_time__lte=twenty_four_hours_ago,
-                category=category)
+                category=category, include=True)
         else:
             return RaceCat.objects.annotate(race_time=Min('race__event_datetime')).filter(
                 race_time__gte=forty_eight_hours_ago,
-                race_time__lte=twenty_four_hours_ago)
+                race_time__lte=twenty_four_hours_ago, include=True)
+    
+    def largest_races_last_7_days(self, category=None):
+        seven_days_ago = timezone.now() - timedelta(days = 7)
+        if category:
+            race_cats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(
+                race_time__gte=seven_days_ago, category=category, include=True).order_by('-racer_count')
+        else:
+            race_cats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(
+                race_time__gte=seven_days_ago, include=True).order_by('-racer_count')
+        
+        return race_cats[:10]
+    
+    def most_competitive_races_last_7_days(self, category=None):
+        seven_days_ago = timezone.now() - timedelta(days = 7)
+        if category:
+            race_cats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(
+                race_time__gte=seven_days_ago, category=category, include=True).order_by('-racer_count')
+        else:
+            race_cats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(
+                race_time__gte=seven_days_ago, include=True).order_by('-racer_count')
+        
+        return sorted(race_cats, key=lambda x: x.race_quality)[:10]
+        
 
 class RaceCat(models.Model):
     objects = RaceCatManager()
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     category = models.CharField(max_length=1)
+    include = models.BooleanField(default=True)
+
+    def set_include(self):
+        if "Team Time Trial" in self.race.event_name: self.include = False
+        if len(RaceResult.objects.filter(race_cat=self)) < 4: self.include = False
+        self.save()
 
     @property
     def first(self):
@@ -129,7 +158,7 @@ class RaceCat(models.Model):
     
     @property
     def race_quality(self):
-        if self.first.zp_rank_event > 0: return self.first.zp_rank_event
+        if self.first.zp_rank_event > 40: return self.first.zp_rank_event
         return 999
     
     @property
@@ -199,11 +228,11 @@ class Team(models.Model):
 
     def get_all_podiums(self, category=None):
         if category == None: 
-            win_results = RaceResult.objects.filter(position=1, team=self)
-            podium_results = RaceResult.objects.filter(position__lte=3, team=self)
+            win_results = RaceResult.objects.filter(position=1, team=self, race_cat__include=True)
+            podium_results = RaceResult.objects.filter(position__lte=3, team=self, race_cat__include=True)
         else:
-            win_results = RaceResult.objects.filter(position=1, team=self, race_cat__category=category)
-            podium_results = RaceResult.objects.filter(position__lte=3, team=self, race_cat__category=category)
+            win_results = RaceResult.objects.filter(position=1, team=self, race_cat__category=category, race_cat__include=True)
+            podium_results = RaceResult.objects.filter(position__lte=3, team=self, race_cat__category=category, race_cat__include=True)
         return {'win_results': win_results, 'podium_results': podium_results}
 
 
