@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_distill',
     'django.contrib.humanize',
+    'fontawesomefree'
 ]
 
 MIDDLEWARE = [
@@ -84,6 +85,7 @@ TEMPLATES = [
     },
 ]
 
+LOGLEVEL = os.environ.get('LOGLEVEL', 'info').upper()
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -94,7 +96,7 @@ LOGGING = {
     },
     'handlers': {
         'log_to_stdout': {
-            'level': 'INFO',
+            'level': LOGLEVEL,
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
             },
@@ -102,7 +104,7 @@ LOGGING = {
     'loggers': {
         'main': {
             'handlers': ['log_to_stdout'],
-            'level': 'INFO',
+            'level': LOGLEVEL,
             'propagate': True,
         }
     }
@@ -157,7 +159,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"), # your static/ files folder
+]
+STATIC_ROOT = os.path.join(BASE_DIR, "production_static/")
+
 
 
 

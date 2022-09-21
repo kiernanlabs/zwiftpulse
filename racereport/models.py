@@ -15,8 +15,6 @@ class ScrapeReport(models.Model):
     def __str__(self):
         return f"=== {self.scrape_start} :: [{self.completed} - {self.count_successful} successful] completed: {self.scrape_end}"
 
-
-
 class Race(models.Model):
     event_id = models.IntegerField()
     event_datetime = models.DateTimeField()
@@ -133,10 +131,13 @@ class RaceCat(models.Model):
     def race_quality(self):
         if self.first.zp_rank_event > 0: return self.first.zp_rank_event
         return 999
+    
+    @property
+    def num_racers(self):
+        return len(RaceResult.objects.filter(race_cat=self))
 
     def __str__(self):
         return f'[{self.category}] {self.race}'
-
 
 class RaceResultManager(models.Manager):
     def raceresults_since(self, start_time, category):
@@ -185,7 +186,6 @@ class TeamManager(models.Manager):
             })
         return sorted(team_ranking,key=lambda d: d['this_week_wins_count'], reverse=True)[:11]
         
-
 class Team(models.Model):
     objects = TeamManager()
     name = models.CharField(max_length=200)
@@ -246,7 +246,6 @@ class Team(models.Model):
     def __str__(self):
         return self.name
 
-
 class RaceResult(models.Model):
     race_cat = models.ForeignKey(RaceCat, on_delete=models.CASCADE)
     racer_name = models.CharField(max_length=200)
@@ -274,8 +273,21 @@ class NarrativeManager(models.Manager):
         )
         narrative.save()
 
+        narrative.why.clear()
         for race_result in podiums['win_results']:
             narrative.why.add(race_result)
+    
+    def get_this_week_narratives(self, category=None):
+        today = timezone.now()
+        beginning_of_week = today - timedelta(days=today.weekday(),hours=today.hour, minutes=today.minute, seconds=today.second, microseconds=today.microsecond)
+        if category == None: return Narrative.objects.filter(created_at__gte=beginning_of_week)
+        else: return Narrative.objects.filter(created_at__gte=beginning_of_week, arena=category)
+    
+    def get_top_10_narratives(self, category=None):
+        today = timezone.now()
+        beginning_of_week = today - timedelta(days=today.weekday(),hours=today.hour, minutes=today.minute, seconds=today.second, microseconds=today.microsecond)
+        if category == None: return Narrative.objects.filter(created_at__gte=beginning_of_week).order_by('-combined_score')[:10]
+        else: return Narrative.objects.filter(created_at__gte=beginning_of_week, arena=category).order_by('-combined_score')[:10]
 
 class Narrative(models.Model):
     type = models.CharField(max_length=200) # team 24hr wins
@@ -287,14 +299,40 @@ class Narrative(models.Model):
     why = models.ManyToManyField(RaceResult) # list of raceresults
     impact_score = models.IntegerField(default=0) # number of wins
     surprise_score = models.IntegerField(default=0) # difference between wins and last week wins
+    combined_score = models.IntegerField(default=0) # average of surprise and impact
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     objects = NarrativeManager()
     
     def __str__(self):
-        return f"{self.actor} wins {self.action} races in the last 24hrs in {self.arena} category.  Moving into {self.outcome} this week.  Last week {self.actor} won {self.context} total races."
+        return f"{self.created_at}[{self.combined_score}]::{self.actor} wins {self.action} races in the last 24hrs in {self.arena} category::{self.impact_score}|{self.surprise_score}"
+
+    @property
+    def humanize_outcome(self):
+        if self.outcome == 0: return "n/a"
+        if self.outcome == 1: return "1st"
+        if self.outcome == 2: return "2nd"
+        if self.outcome == 3: return "3rd"
+        if self.outcome <= 20: return f"{self.outcome}th"
+        return f"{self.outcome}"
+
+    @property
+    def print_narrative(self):
+        return f"{self.actor} wins {self.action} races in the last 24hrs in {self.arena} category, moving into {self.humanize_outcome} place this week.  Last week {self.actor} won {self.context} total races (~{round(self.context/7)} per day)."
     
+    @property
+    def print_narrative_no_team(self):
+        return f" wins {self.action} races in the last 24hrs in {self.arena} category, moving into {self.humanize_outcome} place this week.  Last week {self.actor} won {self.context} total races (~{round(self.context/7)} per day)."
+    
+
+    def calc_impact(self):
+        return self.action
+    
+    def calc_surprise(self):
+        last_week_daily_wins = self.context / 7
+        return max(self.action - last_week_daily_wins,0)
+
     @property
     def currently_active(self):
         today = timezone.now()
@@ -305,6 +343,10 @@ class Narrative(models.Model):
         podiums = self.actor.get_podiums_last_24hrs(self.arena)
         self.action = len(podiums['win_results'])
         self.outcome = weekly_place
+
+        self.why.clear()
+        for race_result in podiums['win_results']: self.why.add(race_result)
+
         self.save()
 
 

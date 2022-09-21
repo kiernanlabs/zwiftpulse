@@ -25,5 +25,8 @@ urlpatterns = [
     path('', include('racereport.urls')),
     path('admin/', admin.site.urls),
     path("favicon.ico",
-        RedirectView.as_view(url=staticfiles_storage.url("favicon.ico"))),
+        RedirectView.as_view(url=staticfiles_storage.url("zwiftpulse/favicon.ico"))),
 ]
+
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+urlpatterns += staticfiles_urlpatterns()

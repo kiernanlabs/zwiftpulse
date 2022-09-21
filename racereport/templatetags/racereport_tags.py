@@ -8,6 +8,11 @@ register = template.Library()
 def display_racecats(racecats):
     return {'racecats': racecats}
 
+@register.inclusion_tag('racereport/narrative_card.html')
+def display_narrative(narrative):
+    results = narrative.why.all()
+    return {'narrative': narrative, 'results': results}
+
 @register.inclusion_tag('racereport/scrape_report.html')
 def display_scrape_report():
     most_recent_scrape = ScrapeReport.objects.latest('scrape_start')

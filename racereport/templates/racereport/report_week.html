@@ -1,6 +1,14 @@
 {% extends "racereport/base.html" %}
 {% load racereport_tags %}
 
+{% block narratives %}
+    <h1 class="title">Top stories today</h1>
+
+    {% for narrative in narratives %}
+        {% display_narrative narrative %}
+    {% endfor %}
+{% endblock narratives %}
+
 {% block teams %}
     <div class="box">
         <h1 class="title">Top 10 Teams this week</h1>

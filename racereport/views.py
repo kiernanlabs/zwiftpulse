@@ -9,7 +9,7 @@ from django.views.generic import (
     ListView,
 )
 
-from .models import Race, RaceCat, RaceResult, ScrapeReport, Team
+from .models import Race, RaceCat, RaceResult, ScrapeReport, Team, Narrative
 import logging
 
 logger = logging.getLogger('main')
@@ -37,8 +37,10 @@ def this_week(request, category=None):
     
     last_race_imported = Race.objects.last()
     most_recent_race_imported = Race.objects.latest('event_datetime')
+
+    narratives = Narrative.objects.get_top_10_narratives(category)[:3]
     
-    context = {'racecats_quality': race_cats_quality, 'racecats_size': race_cats_size, 'top_teams': top_teams, 'last_race_imported': last_race_imported, 'most_recent_race_imported': most_recent_race_imported, 'category':category}
+    context = {'narratives': narratives, 'racecats_quality': race_cats_quality, 'racecats_size': race_cats_size, 'top_teams': top_teams, 'last_race_imported': last_race_imported, 'most_recent_race_imported': most_recent_race_imported, 'category':category}
     return render(request, 'racereport/report_week.html', context)
 
 def this_week_team_results(request, team_url_name, category=None):

@@ -1,0 +1,25 @@
+{% load racereport_tags %}
+{% load humanize %}
+{% load static %}
+
+<div class="card block">
+    <header class="card-header">
+        <p class="card-header-title">
+            <span class="tag is-rounded {{narrative.arena|category_color}}">{{narrative.arena}}</span> &nbsp;
+             <a href='/team/{{narrative.actor.url_name}}/{{narrative.arena|default:"all"}}'>{{narrative.actor}}</a> &nbsp; {{narrative.print_narrative_no_team}}
+        </p>
+        <a class="card-header-icon card-toggle">
+            <i class="fa-solid fa-angle-down"></i>
+        </a>
+    </header>
+    <div class="card-content is-hidden">
+        <div class="content">
+            <p>Race Wins, last 24hrs:</p>
+            <ul>
+                {% for race_result in results %}
+                    <li>{{race_result.race_cat.race.event_datetime|naturaltime}}: {{race_result.race_cat}} [{{race_result.race_cat.num_racers}} racers]: <strong>{{race_result.racer_name}}</strong></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>

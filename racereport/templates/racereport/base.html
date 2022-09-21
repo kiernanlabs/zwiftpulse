@@ -4,10 +4,15 @@
 <head>
     {% load static %}
     {% load racereport_tags %}
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{% static 'favicon.ico' %}">
-    <title>The Pulse</title>
+    <link rel="icon" href="{% static 'zwiftpulse/favicon.ico' %}">
+    <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
+    <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+
+    <title>The Pulse</title>
+
 </head>
 <nav class="navbar is-dark has-shadow" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
@@ -58,6 +63,9 @@
             {% block scrapes %}
             {% endblock scrapes %}
             
+            {% block narratives %}
+            {% endblock narratives %}
+
             {% block teams %}
             {% endblock teams %}
 
@@ -89,6 +97,15 @@
     });
 
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+	let cardToggles = document.getElementsByClassName('card-toggle');
+	for (let i = 0; i < cardToggles.length; i++) {
+		cardToggles[i].addEventListener('click', e => {
+			e.currentTarget.parentElement.parentElement.childNodes[3].classList.toggle('is-hidden');
+		});
+	}
+});
 </script>
 
 </html>
