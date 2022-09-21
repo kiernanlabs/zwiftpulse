@@ -108,7 +108,7 @@ class RaceCatManager(models.Manager):
                 race_time__gte=seven_days_ago, include=True).order_by('-racer_count')
         
         return sorted(race_cats, key=lambda x: x.race_quality)[:10]
-        
+       
 
 class RaceCat(models.Model):
     objects = RaceCatManager()

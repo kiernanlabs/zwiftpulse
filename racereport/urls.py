@@ -36,6 +36,6 @@ urlpatterns = [
     distill_path('about', views.about, name='about'),
     distill_path('logs', views.last_100_scrapes, name='last_scrapes'),
     distill_path('week/<str:category>', views.this_week, name='this_week', distill_func=get_week_reports),
-    distill_path('races/<str:category>', views.last_7_days_races, name='last_7_days_races', distill_func=get_week_reports),
+    distill_path('races/<str:category>', views.last_7_days_races, name='last_7_days_races', distill_func=get_last_7_days_races),
     distill_path('team/<str:team_url_name>/<str:category>', views.this_week_team_results, name='team_results', distill_func=get_team_pages_category),
 ]
