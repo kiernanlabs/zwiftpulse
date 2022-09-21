@@ -29,7 +29,7 @@ class Command(BaseCommand):
                 team = team_rank['team']
                 if team.name == "None" : continue
                 
-                narratives = Narrative.objects.filter(created_at__gte=beginning_of_week, actor=team)
+                narratives = Narrative.objects.filter(created_at__gte=beginning_of_week, actor=team, arena=category)
                 if len(narratives)==0:
                    Narrative.objects.create_24hr_wins_narrative(team, category, rank)
                 else:
