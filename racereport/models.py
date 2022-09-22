@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
-from nis import cat
+import logging
 from django.utils import timezone
 from django.db import models
 from django.db.models import Count, Min
 
-
+logger = logging.getLogger('main')
 
 class ScrapeReport(models.Model):
     scrape_start = models.DateTimeField()
@@ -108,6 +108,28 @@ class RaceCatManager(models.Manager):
                 race_time__gte=seven_days_ago, include=True).order_by('-racer_count')
         
         return sorted(race_cats, key=lambda x: x.race_quality)[:10]
+    
+    def largest_races_last_24hrs(self, category=None):
+        one_day_ago = timezone.now() - timedelta(days = 1)
+        if category:
+            race_cats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(
+                race_time__gte=one_day_ago, category=category, include=True).order_by('-racer_count')
+        else:
+            race_cats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(
+                race_time__gte=one_day_ago, include=True).order_by('-racer_count')
+        
+        return race_cats[:10]
+    
+    def most_competitive_races_last_24hrs(self, category=None):
+        one_day_ago = timezone.now() - timedelta(days = 1)
+        if category:
+            race_cats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(
+                race_time__gte=one_day_ago, category=category, include=True).order_by('-racer_count')
+        else:
+            race_cats = RaceCat.objects.annotate(race_time=Min('race__event_datetime'), racer_count=Count('raceresult')).filter(
+                race_time__gte=one_day_ago, include=True).order_by('-racer_count')
+        
+        return sorted(race_cats, key=lambda x: x.race_quality)[:10]
        
 
 class RaceCat(models.Model):
@@ -115,6 +137,7 @@ class RaceCat(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     category = models.CharField(max_length=1)
     include = models.BooleanField(default=True)
+    has_video = models.BooleanField(default=False)
 
     def set_include(self):
         if "Team Time Trial" in self.race.event_name: self.include = False
@@ -378,5 +401,49 @@ class Narrative(models.Model):
 
         self.save()
 
+class VideoManager(models.Manager):
+    def create_video(self, zp_url, category, stream_url, streamer, commentary):
+        try:
+            #expected URL format: https://zwiftpower.com/events.php?zid=3072775
+            event_ID = ""
+            if len(zp_url.split("zid=")) > 1:
+                event_ID = zp_url.split("zid=")[1]
+            
+            race = Race.objects.get_or_create(
+                event_id=event_ID,
+                defaults={'event_datetime': timezone.now(), 'event_name': "unknown"}
+            )[0]
+
+            race_cat = RaceCat.objects.get_or_create(
+                race=race,
+                category=category,
+            )[0]
+            video = Video(race_cat=race_cat, zp_url=zp_url, category=category, stream_url=stream_url, streamer=streamer, commentary=commentary)
+            video.save()
+            
+            race_cat.has_video = True
+            race_cat.save()
+            
+            return video
+        except Exception as e:
+                logger.info(f"--Failed to create video object:{e}")
+                return None
+
+class Video(models.Model):
+    race_cat = models.ForeignKey(RaceCat, on_delete=models.CASCADE)
+    zp_url = models.CharField(max_length=200)
+    category = models.CharField(max_length=1)
+    stream_url = models.CharField(max_length=200)
+    streamer = models.CharField(max_length=200)
+    commentary = models.BooleanField(default=False)
+    upvotes = models.IntegerField(default=0)
+
+    objects = VideoManager()
+
+    def __str__(self):
+        return f"[{self.streamer}] : {self.race_cat} : {self.stream_url}"
+    
+
+    
 
 

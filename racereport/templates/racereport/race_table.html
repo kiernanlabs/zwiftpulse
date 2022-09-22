@@ -15,6 +15,11 @@
         </header>
         <div class="card-content">
             <div class="content">
+                {% if race_cat.has_video %}
+                    <div class="notification is-link is-light">
+                        Community submitted race replay(s) are available for this race. <a href="/race/{{race_cat.race.event_id}}/{{race_cat.category}}">click here</a> for details 
+                    </div>
+                {% endif %}
                 <p>Podium: (Show winners)
                     <a class="podium-toggle">
                         <i class="fa-solid fa-angle-down"></i>

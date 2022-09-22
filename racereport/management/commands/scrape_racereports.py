@@ -347,11 +347,19 @@ class Command(BaseCommand):
             return False
 
         event_datetime = datetime.fromtimestamp(int(rider_data[0]['EventTimestamp']), pytz.timezone("US/Eastern"))
-        race = Race.objects.get_or_create(
+        race_tuple = Race.objects.get_or_create(
                 event_id=rider_data[0]['EventID'],
                 defaults={'event_datetime': event_datetime, 'event_name': event_name_trim}
-        )[0]
+        )
 
+        race = race_tuple[0]
+        
+        # update race with default data if found (sometimes races can be created with bad data)
+        if race_tuple[1]==False:
+            race.event_datetime = event_datetime
+            race.event_name = event_name_trim
+            race.save()
+            
         # assume data is coming in sorted
         # need to count finishers by category
         finishers_by_category = {}

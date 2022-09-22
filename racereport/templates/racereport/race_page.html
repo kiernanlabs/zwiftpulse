@@ -1,0 +1,15 @@
+{% extends "racereport/base.html" %}
+{% load racereport_tags %}
+{% block title %}
+    <section class="hero is-small {{racecat.category|category_color}} block">
+        <div class="hero-body">
+            <p class="title has-text-centered">Race Detail</p>
+        </div>
+    </section>
+{% endblock title %}
+
+{% block races %}
+    <section class="section">
+        {% display_racecat_single_detail racecat %}
+    </section>
+{% endblock races %}

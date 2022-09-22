@@ -3,7 +3,7 @@
 {% block title %}
     <section class="hero is-small {{category|category_color}} block">
         <div class="hero-body">
-            <p class="title has-text-centered">Most Competitive Races, Last 7 Days ~ {{category|category_title}}</p>
+            <p class="title has-text-centered">Top Races, {{timeframe|timeframe_title}} ~ {{category|category_title}}</p>
         </div>
     </section>
 {% endblock title %}
@@ -12,7 +12,7 @@
     <div class="columns">
         <div class="column">
             <section class="section">
-                <h1 class="title">Largest races last 24hrs</h1>
+                <h1 class="title">Largest races {{timeframe|timeframe_title}}</h1>
                 <h2 class="subtitle">(based on zp finishers)</h2>
                 
                 {% display_racecats racecats_size%}
@@ -20,7 +20,7 @@
         </div>
         <div class="column">
             <section class="section">    
-                <h1 class="title">Most competitive races last 24hrs</h1>
+                <h1 class="title">Most competitive races {{timeframe|timeframe_title}}</h1>
                 <h2 class="subtitle">(based on zp race quality)</h2>
 
                 {% display_racecats racecats_quality%}

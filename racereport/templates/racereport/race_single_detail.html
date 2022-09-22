@@ -1,0 +1,59 @@
+{% load racereport_tags %}
+{% load humanize %}
+
+<div class="card block">
+    <header class="card-header">
+        <p class="card-header-title">
+            {{race_cat.race.event_name}}
+            <br>
+            {{race_cat.race.event_datetime}} ({{race_cat.race.event_datetime|naturaltime}})
+        </p>
+        <span class="card-header-icon">
+            <span class="tag is-rounded {{race_cat.category|category_color}}">{{race_cat.category}}</span>
+        </span>
+    </header>
+    <div class="card-content">
+        <div class="content">
+            {% if race_cat.has_video %}
+                <div class="notification is-link is-light">
+                    Community submitted race replay(s) are available for this race. <a href="#">click here</a> for details 
+                </div>
+            {% endif %}
+            <p>Podium: (Show winners)
+                <a class="podium-toggle">
+                    <i class="fa-solid fa-angle-down"></i>
+                </a>
+            </p>
+            <div class="podium is-hidden block">
+                <table class="table">
+                    <tr>
+                        <td>1st</td>
+                        <td>{{race_cat.first.racer_name}}</td>
+                        <td><a href='/team/{{race_cat.first.team.url_name}}/{{category|default:"all"}}'>{{race_cat.first.team.name}}</a></td>
+                    </tr>
+                    <tr>
+                        <td>2nd</td>
+                        <td>{{race_cat.second.racer_name}}</td>
+                        <td><a href='/team/{{race_cat.second.team.url_name}}/{{category|default:"all"}}'>{{race_cat.second.team.name}}</a></td>
+                    </tr>
+                    <tr>
+                        <td>3rd</td>
+                        <td>{{race_cat.third.racer_name}}</td>
+                        <td><a href='/team/{{race_cat.third.team.url_name}}/{{category|default:"all"}}'>{{race_cat.third.team.name}}</a></td>
+                    </tr>
+                </table>
+            </div>
+            <p>Notable Racers (based on ZP Rank):</p>
+            <ul>
+                {% for racer in race_cat.top_three_racers %}
+                    <li>{{racer.racer_name}} [<a href='/team/{{racer.team.url_name}}/{{category|default:"all"}}'>{{racer.team.name}}</a>] zp rank: {{racer.zp_rank_before}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <footer class="card-footer">
+        <p class="card-footer-item">ZP Finishers: {{race_cat.racer_count}}</p>
+        <p class="card-footer-item">Race Quality: {{race_cat.race_quality}}</p>
+        <a class="card-footer-item" href="https://zwiftpower.com/events.php?zid={{ race_cat.event_id }}">ZwiftPower link</a>
+    </footer>
+</div>

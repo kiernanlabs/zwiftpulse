@@ -8,6 +8,10 @@ register = template.Library()
 def display_racecats(racecats):
     return {'racecats': racecats}
 
+@register.inclusion_tag('racereport/race_single_detail.html')
+def display_racecat_single_detail(racecat):
+    return {'race_cat': racecat}
+
 @register.inclusion_tag('racereport/narrative_card.html')
 def display_narrative(narrative):
     results = narrative.why.all()
@@ -28,9 +32,20 @@ def active_nav(value, report):
     if value == report: return "is-active"
     return ''
 
+@register.filter(name='report_timeframe')
+def report_url(report, timeframe):
+    if report == 'races' : return f'{report}/{timeframe}'
+    return report
+
+@register.filter(name='timeframe_title')
+def report_url(timeframe):
+    if timeframe == 'week' : return "last 7 days"
+    if timeframe == 'day' : return "last 24hrs"
+    return ""
+
 @register.filter(name='category_title')
 def active_nav(category):
-    if category == None: return "All Races"
+    if category == None: return "All Categories"
     else:
         return f"{category} Cat Races"
 
