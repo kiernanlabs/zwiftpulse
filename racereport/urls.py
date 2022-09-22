@@ -2,7 +2,7 @@ from django.urls import path
 from django_distill import distill_path
 from . import views
 from racereport.models import Race, RaceCat, RaceResult, Team, ScrapeReport
-from django.db.models import Count, Min
+from django.db.models import Count, Min, Q
 from django.utils.html import conditional_escape
 
 
