@@ -30,11 +30,11 @@ def get_team_pages_category():
         for category in ["all","A", "B", "C", "D", "E"]:
             yield {'team_url_name':team.url_name, 'category':category}
 
+#    distill_path('race/<int:event_id>/<str:category>', views.display_race_single, name='display_race_single'),
 
 urlpatterns = [
     distill_path('', views.top_teams, name='top_teams', distill_file='index.html'),
     distill_path('about', views.about, name='about'),
-    distill_path('race/<int:event_id>/<str:category>', views.display_race_single, name='display_race_single'),
     distill_path('submit_video', views.submit_video, name='submit_video'),
     distill_path('process_video', views.process_video, name='process_video'),
     distill_path('logs', views.last_100_scrapes, name='last_scrapes'),
