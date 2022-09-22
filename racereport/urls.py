@@ -31,12 +31,12 @@ def get_team_pages_category():
             yield {'team_url_name':team.url_name, 'category':category}
 
 #    distill_path('race/<int:event_id>/<str:category>', views.display_race_single, name='display_race_single'),
+#    distill_path('submit_video', views.submit_video, name='submit_video'),
+#    distill_path('process_video', views.process_video, name='process_video'),
 
 urlpatterns = [
     distill_path('', views.top_teams, name='top_teams', distill_file='index.html'),
     distill_path('about', views.about, name='about'),
-    distill_path('submit_video', views.submit_video, name='submit_video'),
-    distill_path('process_video', views.process_video, name='process_video'),
     distill_path('logs', views.last_100_scrapes, name='last_scrapes'),
     distill_path('top_teams/<str:category>', views.top_teams, name='top_teams', distill_func=get_team_reports),
     distill_path('races/week/<str:category>', views.last_7_days_races, name='last_7_days_races', distill_func=get_last_7_days_races),
