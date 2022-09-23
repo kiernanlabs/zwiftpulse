@@ -237,6 +237,11 @@ class TeamManager(models.Manager):
                 "all_time_wins": len(team_all_results['win_results']),
             })
         return sorted(team_ranking,key=lambda d: d['this_week_wins_count'], reverse=True)[:11]
+    
+    def get_teams_with_wins_today(self, category=None):
+        racecats_today = RaceCat.objects.racecats_last24hrs(category)
+        today_wins = RaceResult.objects.filter(race_cat__in=racecats_today, position=1)
+        return Team.objects.filter(pk__in=today_wins.values('team'))
         
 class Team(models.Model):
     objects = TeamManager()

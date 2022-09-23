@@ -26,7 +26,8 @@ def get_team_pages():
 '''
 
 def get_team_pages_category():
-    for team in Team.objects.all().annotate(raceresult_count=Count('raceresult', filter=Q(raceresult__position=1))).order_by('-raceresult_count')[:100]:
+    teams = Team.objects.get_teams_with_wins_today()
+    for team in teams:
         for category in ["all","A", "B", "C", "D", "E"]:
             yield {'team_url_name':team.url_name, 'category':category}
 
