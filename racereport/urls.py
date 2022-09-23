@@ -42,5 +42,8 @@ urlpatterns = [
     distill_path('top_teams/<str:category>', views.top_teams, name='top_teams', distill_func=get_team_reports),
     distill_path('races/week/<str:category>', views.last_7_days_races, name='last_7_days_races', distill_func=get_last_7_days_races),
     distill_path('races/day/<str:category>', views.last_24hrs_races, name='last_24hr_races', distill_func=get_last_7_days_races),
-    distill_path('team/<str:team_url_name>/<str:category>', views.this_week_team_results, name='team_results', distill_func=get_team_pages_category),
+    distill_path('team/<str:team_url_name>/<str:category>', views.this_week_team_results, name='team_results'),
+    
+    # switching team pages to live (no need to generate)
+    # distill_path('team/<str:team_url_name>/<str:category>', views.this_week_team_results, name='team_results', distill_func=get_team_pages_category),
 ]
