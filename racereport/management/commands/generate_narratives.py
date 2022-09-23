@@ -21,6 +21,12 @@ class Command(BaseCommand):
         today = timezone.now()
         beginning_of_week = today - timedelta(days=today.weekday(),hours=today.hour, minutes=today.minute, seconds=today.second, microseconds=today.microsecond)
         
+        # update all narratives to an outcome outside the top 10
+        narratives = Narrative.objects.get_this_week_narratives()
+        for narrative in narratives:
+            narrative.update(99)
+
+        # re-update narratives of top 10 teams
         categories = ["A","B","C","D"]
         for category in categories:
             logger.debug(f"-- {category}")
