@@ -32,7 +32,7 @@
             {% for team in top_teams %}
                 <tr>
                     <td>{{forloop.counter0}}</td>
-                    <td><a href='live.zwiftpulse.com/team/{{team.team.url_name}}/{{category|default:"all"}}'>{{team.team.name}}</a></td>
+                    <td><a href='http://live.zwiftpulse.com/team/{{team.team.url_name}}/{{category|default:"all"}}'>{{team.team.name}}</a></td>
                     <td>{{team.last_24hrs_wins_count|stringformat:"+d"}}</td>
                     <td class="has-background-primary-light has-text-primary-dark has-text-weight-bold">{{team.this_week_wins_count}}
                     <td>{{team.prev_week_wins_count}}</td>
