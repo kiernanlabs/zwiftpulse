@@ -18,11 +18,12 @@
     <section class="section">
         <h1 class="title">Community Race Videos</h1>
         <div class="notification is-warning is-light">
-            Videos are currently found by searching youtube for zwiftpower event links;  videos for an event are not currently tagged to a category
+            Videos are currently found by searching youtube for zwiftpower event links in the video description;  to make sure your videos are found, please add the event links to the descriptions (e.g. https://zwiftpower.com/events.php?zid=3137962).
+            videos for an event are not currently tagged to a category
         </div>
         {% for video in videos %}
             {% display_video video %}
         {% endfor %}
-        <a href="{{'live'|production_url}}/submit_video"">Submit a video of this race</a>
+        <!-- <a href="{{'live'|production_url}}/submit_video"">Submit a video of this race</a> -->
     </section>
 {% endblock races %}
