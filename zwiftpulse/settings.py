@@ -65,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
 ]
 
 ROOT_URLCONF = 'zwiftpulse.urls'
@@ -176,3 +177,5 @@ SHELL_PLUS = "ipython"
 
 ZWIFT_EMAIL = env('ZWIFT_EMAIL')
 ZWIFT_PWD = env('ZWIFT_PWD')
+PRODUCTION = env('PRODUCTION')
+GOOGLE_API_KEY = env('GOOGLE_API_KEY')

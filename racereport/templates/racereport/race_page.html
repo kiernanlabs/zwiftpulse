@@ -1,9 +1,12 @@
 {% extends "racereport/base.html" %}
 {% load racereport_tags %}
+{% load humanize %}
+
 {% block title %}
     <section class="hero is-small {{racecat.category|category_color}} block">
         <div class="hero-body">
-            <p class="title has-text-centered">Race Detail</p>
+            <p class="title has-text-centered">{{racecat.race.event_name}}</p>
+            <p class="subtitle has-text-centered">Category {{racecat.category}} | {{racecat.race.event_datetime}} | {{racecat.race.event_datetime|naturaltime}}</p>
         </div>
     </section>
 {% endblock title %}
@@ -11,5 +14,15 @@
 {% block races %}
     <section class="section">
         {% display_racecat_single_detail racecat %}
+    </section>
+    <section class="section">
+        <h1 class="title">Community Race Videos</h1>
+        <div class="notification is-warning is-light">
+            Videos are currently found by searching youtube for zwiftpower event links;  videos for an event are not currently tagged to a category
+        </div>
+        {% for video in videos %}
+            {% display_video video %}
+        {% endfor %}
+        <a href="{{'live'|production_url}}/submit_video"">Submit a video of this race</a>
     </section>
 {% endblock races %}

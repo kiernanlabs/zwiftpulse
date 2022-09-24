@@ -21,7 +21,8 @@ def about(request):
 def display_race_single(request, event_id, category):
     race = Race.objects.get(event_id=event_id)
     race_cat = RaceCat.objects.filter(race=race,category=category).annotate(racer_count=Count('raceresult'))[0]
-    context = {'category':None, 'report':'races','racecat':race_cat} 
+    videos = Video.objects.filter(race_cat=race_cat)
+    context = {'category':None, 'report':'races','racecat':race_cat, 'timeframe':'week', 'videos':videos} 
     return render(request, 'racereport/race_page.html', context)
 
 
@@ -36,12 +37,12 @@ def process_video(request):
     context = {'category':None, 'report':'','timeframe':'week'}
 
     if request.POST['commentary']=="yes": commentary=True
-    video = Video.objects.create_video(request.POST['zp_url'], request.POST['category'], request.POST['stream_url'], request.POST['streamer_name'], commentary)
+    video = Video.objects.create_video(request.POST['zp_url'], request.POST['category'], request.POST['stream_url'], request.POST['streamer_name'], commentary, request.POST['description'])
     if video:
-        context = {'category':None, 'report':'video_submit', 'detail':video}    
+        context = {'category':None, 'report':'video_submit', 'detail':video, 'timeframe':'week'}    
         return render(request, 'racereport/success.html', context)
     else:
-        context = {'category':None, 'report':'video_submit', 'detail':"failed video creation"}    
+        context = {'category':None, 'report':'video_submit', 'detail':"failed video creation", 'timeframe':'week'}    
         return render(request, 'racereport/error.html', context)
 
 def last_100_scrapes(request):

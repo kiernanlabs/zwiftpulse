@@ -131,7 +131,6 @@ class RaceCatManager(models.Manager):
         
         return sorted(race_cats, key=lambda x: x.race_quality)[:10]
        
-
 class RaceCat(models.Model):
     objects = RaceCatManager()
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
@@ -407,7 +406,7 @@ class Narrative(models.Model):
         self.save()
 
 class VideoManager(models.Manager):
-    def create_video(self, zp_url, category, stream_url, streamer, commentary):
+    def create_video(self, zp_url, stream_url, streamer, commentary, description, title, thumbnail, status, category=None):
         try:
             #expected URL format: https://zwiftpower.com/events.php?zid=3072775
             event_ID = ""
@@ -418,35 +417,51 @@ class VideoManager(models.Manager):
                 event_id=event_ID,
                 defaults={'event_datetime': timezone.now(), 'event_name': "unknown"}
             )[0]
+            
 
-            race_cat = RaceCat.objects.get_or_create(
-                race=race,
-                category=category,
-            )[0]
-            video = Video(race_cat=race_cat, zp_url=zp_url, category=category, stream_url=stream_url, streamer=streamer, commentary=commentary)
+            video = Video(race=race, title=title, thumbnail=thumbnail, zp_url=zp_url, category=category, stream_url=stream_url, streamer=streamer, commentary=commentary, description=description, status=status)
             video.save()
-            
-            race_cat.has_video = True
-            race_cat.save()
-            
+
+            if category != None:
+                logger.debug(f"--category {category} found, searching for race_cat")
+                race_cats = RaceCat.objects.filter(
+                    race=race,
+                    category=category,
+                )
+            else: race_cats = RaceCat.objects.filter(race=race)
+
+            for racecat in race_cats:
+                racecat.has_video = True
+                video.race_cat.add(racecat)
+                racecat.save()
+
             return video
+
         except Exception as e:
                 logger.info(f"--Failed to create video object:{e}")
                 return None
 
 class Video(models.Model):
-    race_cat = models.ForeignKey(RaceCat, on_delete=models.CASCADE)
+    race = models.ForeignKey(Race, on_delete=models.CASCADE, default=None, blank=True, null=True)
+    race_cat = models.ManyToManyField(RaceCat) 
     zp_url = models.CharField(max_length=200)
-    category = models.CharField(max_length=1)
+    category = models.CharField(max_length=1, default=None, blank=True, null=True)
+    status = models.CharField(max_length=200, default="auto_created") # auto_created, user_created, user_created_and_auto_updated
+
+    # Directly from youtube
     stream_url = models.CharField(max_length=200)
-    streamer = models.CharField(max_length=200)
+    title = models.CharField(max_length=200, default=None, blank=True, null=True)
+    thumbnail = models.CharField(max_length=200, default=None, blank=True, null=True)
+    streamer = models.CharField(max_length=200, default=None, blank=True, null=True)
+    description = models.CharField(max_length=200, default=None, blank=True, null=True)
+
     commentary = models.BooleanField(default=False)
     upvotes = models.IntegerField(default=0)
-
+    
     objects = VideoManager()
 
     def __str__(self):
-        return f"[{self.streamer}] : {self.race_cat} : {self.stream_url}"
+        return f"[{self.streamer}] : {self.race} : {self.stream_url}"
     
 
     

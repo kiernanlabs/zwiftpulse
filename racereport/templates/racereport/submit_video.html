@@ -9,7 +9,7 @@
 {% endblock title %}
 
 {% block content %}
-    <form action="/process_video" method="post"> {% csrf_token %}
+    <form action="{{'live'|production_url}}/process_video" method="post"> {% csrf_token %}
         <div class="field">
             <label class="label">Streamer Name</label>
             <div class="control">
@@ -18,14 +18,14 @@
         </div>
         
         <div class="field">
-            <label class="label">Video URL</label>
+            <label class="label">Video URL (e.g. "https://www.youtube.com/watch?v=zX973fB7IYg")</label>
             <div class="control">
             <input class="input" name="stream_url" type="text" placeholder="URL">
             </div>
         </div>
         
         <div class="field">
-            <label class="label">Zwiftpower Event URL</label>
+            <label class="label">Zwiftpower Event URL (e.g. "https://zwiftpower.com/events.php?zid=3137962")</label>
             <div class="control">
             <input class="input" name="zp_url" type="text" placeholder="Name">
             </div>
@@ -41,6 +41,13 @@
                     <option value="D">D</option>
                     <option value="E">E</option>
                 </select>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">Short Description</label>
+            <div class="control">
+            <input class="input" name="description" type="text" placeholder="...">
             </div>
         </div>
         

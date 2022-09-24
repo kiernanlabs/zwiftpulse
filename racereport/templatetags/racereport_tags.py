@@ -1,4 +1,6 @@
 from django import template
+from django.conf import settings
+
 from racereport.models import Race, RaceCat, RaceResult, Team, ScrapeReport
 
 
@@ -11,6 +13,10 @@ def display_racecats(racecats):
 @register.inclusion_tag('racereport/race_single_detail.html')
 def display_racecat_single_detail(racecat):
     return {'race_cat': racecat}
+
+@register.inclusion_tag('racereport/video_detail.html')
+def display_video(video):
+    return {'video': video}
 
 @register.inclusion_tag('racereport/narrative_card.html')
 def display_narrative(narrative):
@@ -25,6 +31,12 @@ def display_scrape_report():
 @register.filter(name='active_nav')
 def active_nav(value, category):
     if value == category: return "is-active"
+    return ''
+
+#return full url to swap between live/static in production only
+@register.filter(name='production_url')
+def production_url(subdomain):
+    if settings.PRODUCTION == 'TRUE': return f"http://{subdomain}.zwiftpulse.com"
     return ''
 
 @register.filter(name='active_nav2')
