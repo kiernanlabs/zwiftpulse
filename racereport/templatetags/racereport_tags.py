@@ -18,6 +18,10 @@ def display_racecat_single_detail(racecat):
 def display_video(video):
     return {'video': video}
 
+@register.inclusion_tag('racereport/video_detail_with_race.html')
+def display_video_with_race(video, race):
+    return {'video': video, 'race': race}
+
 @register.inclusion_tag('racereport/narrative_card.html')
 def display_narrative(narrative):
     results = narrative.why.all()

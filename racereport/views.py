@@ -25,6 +25,10 @@ def display_race_single(request, event_id, category):
     context = {'category':None, 'report':'races','racecat':race_cat, 'timeframe':'week', 'videos':videos} 
     return render(request, 'racereport/race_page.html', context)
 
+def top_videos(request):
+    videos = Video.objects.all()
+    context = {'videos':videos, 'category':None, 'report':'videos','timeframe':'week'}
+    return render(request, 'racereport/top_video_report.html', context)
 
 def submit_video(request):
     context = {'category':None, 'report':'','timeframe':'week'}

@@ -1,0 +1,31 @@
+<div class="card block">
+    <div class="columns">
+      <div class="column">
+        <div class="card-content">
+        </div>
+      </div>
+      <div class="column">
+        <div class="card-content">
+            <div class="media">
+                <div class="media-left">
+                  <figure class="image is-96x96">
+                    <img src="{{video.thumbnail}}" alt="thumbnail image">
+                  </figure>
+                </div>
+                <div class="media-content">
+                  <p class="title is-4">{{video.streamer}}</p>
+                  <p class="subtitle is-6">{{video.title}}</p>
+                </div>
+            </div>    
+            <div class=content">
+                {{video.description}}
+            </div>
+        </div>
+      </div>
+    </div>
+    <footer class="card-footer">
+        <p class="card-footer-item"><a href="{{video.stream_url}}">Video link</a></p>
+        <p class="card-footer-item">Upvotes: {{video.upvotes}} &nbsp; <a href="#"><i class="fa-solid fa-circle-up"></i></a> (not currently implemented)</p>
+        <!-- <p class="card-footer-item">Has Commentary: {{video.commentary}}</p> -->
+    </footer>
+</div>
