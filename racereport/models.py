@@ -15,6 +15,16 @@ class ScrapeReport(models.Model):
     def __str__(self):
         return f"=== {self.scrape_start} :: [{self.completed} - {self.count_successful} successful] completed: {self.scrape_end}"
 
+class RaceManager(models.Manager):
+    def get_top_X_races_last_Y_days(self, num_races, num_days):
+        twenty_four_hours_ago = timezone.now() - timedelta(days = num_days)
+        races = Race.objects.annotate(num_raceresults=Count('racecat__raceresult')).filter(event_datetime__gte=twenty_four_hours_ago).order_by('-num_raceresults')
+        included_races = []
+        for race in races:
+            if race.include == True: included_races.append(race)
+        
+        return included_races[:num_races]
+
 class Race(models.Model):
     event_id = models.IntegerField()
     event_datetime = models.DateTimeField()
@@ -22,12 +32,20 @@ class Race(models.Model):
     # distance_km = models.FloatField()
     # course = models.CharField(max_length=200)
 
+    objects = RaceManager()
+
     def __str__(self):
         return self.event_name
     
     @property
     def hours_ago(self):
         return round((timezone.now() - self.event_datetime).seconds/60/60)
+    
+    @property
+    def include(self):
+        for racecat in self.racecat_set.all():
+            if racecat.include == True: return True
+        return False
 
 class RaceCatManager(models.Manager):
     def top_5_races(self, start_time):
@@ -418,9 +436,23 @@ class VideoManager(models.Manager):
                 defaults={'event_datetime': timezone.now(), 'event_name': "unknown"}
             )[0]
             
-
-            video = Video(race=race, title=title, thumbnail=thumbnail, zp_url=zp_url, category=category, stream_url=stream_url, streamer=streamer, commentary=commentary, description=description, status=status)
-            video.save()
+            result = Video.objects.get_or_create(
+                race=race, 
+                stream_url=stream_url,
+                defaults={'title':title, 'thumbnail':thumbnail, 'zp_url':zp_url, 'category':category, 'streamer':streamer, 'commentary':commentary, 'description':description, 'status':status}
+            )
+            video = result[0]
+            if result[1] == False:
+                logger.debug(f"--already found video, updating values")
+                video.title = title
+                video.thumbnail = thumbnail
+                video.zp_url = zp_url
+                video.category = category
+                video.streamer = streamer
+                video.commentary = commentary
+                video.description = description
+                video.status = status
+                video.save()
 
             if category != None:
                 logger.debug(f"--category {category} found, searching for race_cat")

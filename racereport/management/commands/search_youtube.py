@@ -35,6 +35,8 @@ class Command(BaseCommand):
 
         if options['type'] == 0:
             races = Race.objects.filter(event_id=options['event_id'])
+        elif options['type'] == 6:
+            races = Race.objects.get_top_X_races_last_Y_days(40, 1)
         else: races = Race.objects.filter(racecat__in=racecats).distinct()
 
         logger.info(f"--Searching {len(races)} races")
