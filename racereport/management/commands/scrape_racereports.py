@@ -393,7 +393,7 @@ class Command(BaseCommand):
             defaults={'team':team_obj[0], 'position': position, 'time_ms': row['Time'], 'zp_rank_before': zp_rank_before, 'zp_rank_event': zp_rank_event}
         )[0]
         
-        logger.debug(f'Successfully created: {race_result} | position {race_result.position}')
+        # logger.debug(f'Successfully created: {race_result} | position {race_result.position}')
         
     
     '''Logs into ZwiftPower if needed as part of scraping process'''

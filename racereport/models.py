@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
-import logging
 from django.utils import timezone
 from django.db import models
 from django.db.models import Count, Min
+import logging
 
 logger = logging.getLogger('main')
 
@@ -24,6 +24,11 @@ class RaceManager(models.Manager):
             if race.include == True: included_races.append(race)
         
         return included_races[:num_races]
+    
+    def get_races_with_videos(start_time):
+        races = Race.objects.filter(event_datetime__gte=start_time, video__isnull=False).order_by('-event_datetime')
+        return races
+
 
 class Race(models.Model):
     event_id = models.IntegerField()
@@ -425,12 +430,14 @@ class Narrative(models.Model):
 
 class VideoManager(models.Manager):
     def create_video(self, zp_url, stream_url, streamer, commentary, description, title, thumbnail, status, category=None):
-        try:
+        # try:
             #expected URL format: https://zwiftpower.com/events.php?zid=3072775
             event_ID = ""
             if len(zp_url.split("zid=")) > 1:
                 event_ID = zp_url.split("zid=")[1]
             
+            logger.debug(f"--attempting to match video to event_id: {event_ID}")
+
             race = Race.objects.get_or_create(
                 event_id=event_ID,
                 defaults={'event_datetime': timezone.now(), 'event_name': "unknown"}
@@ -452,6 +459,7 @@ class VideoManager(models.Manager):
                 video.commentary = commentary
                 video.description = description
                 video.status = status
+                video.race = race
                 video.save()
 
             if category != None:
@@ -467,11 +475,12 @@ class VideoManager(models.Manager):
                 video.race_cat.add(racecat)
                 racecat.save()
 
+            logger.debug(f"--successfully created video: {video}")
             return video
 
-        except Exception as e:
-                logger.info(f"--Failed to create video object:{e}")
-                return None
+        #except Exception as e:
+        #        logger.info(f"--Failed to create video object:{e}")
+        #        return None
 
 class Video(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE, default=None, blank=True, null=True)

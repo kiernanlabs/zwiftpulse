@@ -48,6 +48,7 @@ urlpatterns = [
     path('submit_video', views.submit_video, name='submit_video'),
     path('race/<int:event_id>/<str:category>', views.display_race_single, name='display_race_single'),
     path('top_videos', views.top_videos, name='top_videos'),
+    path('videos/week', views.videos_this_week, name='videos_this_week'),
 
     # switching team pages to live (no need to generate)
     # distill_path('team/<str:team_url_name>/<str:category>', views.this_week_team_results, name='team_results', distill_func=get_team_pages_category),

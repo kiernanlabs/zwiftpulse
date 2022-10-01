@@ -22,6 +22,11 @@ def display_video(video):
 def display_video_with_race(video, race):
     return {'video': video, 'race': race}
 
+@register.inclusion_tag('racereport/video_race_detail_table.html')
+def display_video_race_table(videos):
+    return {'videos': videos}
+
+
 @register.inclusion_tag('racereport/narrative_card.html')
 def display_narrative(narrative):
     results = narrative.why.all()

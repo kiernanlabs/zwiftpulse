@@ -1,0 +1,18 @@
+{% extends "racereport/base.html" %}
+{% load racereport_tags %}
+{% block title %}
+    <section class="hero is-small {{category|category_color}} block">
+        <div class="hero-body">
+            <p class="title has-text-centered">Videos last 7 days ~ {{category|category_title}}</p>
+        </div>
+    </section>
+{% endblock title %}
+
+{% block races %}
+    <h1 class="title">Community Race Videos</h1>
+    <div class="notification is-warning is-light">
+        Videos are currently found by searching youtube for zwiftpower event links in the video description;  to make sure your videos are found, please add the event links to the descriptions (e.g. https://zwiftpower.com/events.php?zid=3137962).
+        videos for an event are not currently tagged to a category
+    </div>
+    {% display_video_race_table videos=videos %}
+{% endblock races %}

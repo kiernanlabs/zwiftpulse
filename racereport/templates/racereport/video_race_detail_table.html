@@ -1,0 +1,22 @@
+{% load humanize %}
+
+<table class="table">
+  <tr>
+    <th>Streamer</th>
+    <th>Event</th>
+    <th>Time</th>
+    <th></th>
+    <th>Video</th>
+    <th>ZP Link</th>
+  </tr>
+  {% for video in videos %}
+  <tr>
+    <td>{{video.streamer}}</td>
+    <td>{{video.race.event_name}}</td>
+    <td>{{video.race.event_datetime}}</td>
+    <td>{{video.race.event_datetime|naturaltime}}</td>
+    <td><a href="{{video.stream_url}}">{{video.title}}</a></td>
+    <td><a href="https://zwiftpower.com/events.php?zid={{ video.race.event_id }}">ZwiftPower</a></td>
+  </tr>
+  {% endfor %}
+</table>

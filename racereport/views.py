@@ -25,6 +25,12 @@ def display_race_single(request, event_id, category):
     context = {'category':None, 'report':'races','racecat':race_cat, 'timeframe':'week', 'videos':videos} 
     return render(request, 'racereport/race_page.html', context)
 
+def videos_this_week(request):
+    seven_days_ago = timezone.now() - timedelta(days = 7)
+    videos = Video.objects.annotate(race_time=Min('race__event_datetime')).filter(race_time__gte=seven_days_ago).order_by('-race_time')
+    context = {'videos':videos, 'category':None, 'report':'videos','timeframe':'week'}
+    return render(request, 'racereport/videos_this_week.html', context)
+
 def top_videos(request):
     videos = Video.objects.all()
     context = {'videos':videos, 'category':None, 'report':'videos','timeframe':'week'}
