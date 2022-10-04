@@ -144,6 +144,8 @@ class Command(BaseCommand):
             race_objs = Race.objects.filter(event_id=event_id)
             if len(race_objs) == 0:
                 urls.append(link.get_attribute("href"))
+            elif race_objs[0].event_name == "unknown":
+                urls.append(link.get_attribute("href"))
             else:
                 race_cats = RaceCat.objects.filter(race=race_objs[0])
                 if len(race_cats) > 0 and race_cats[0].race_quality == 999 and race_objs[0].hours_ago < 4:
