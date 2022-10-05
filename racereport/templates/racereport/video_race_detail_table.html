@@ -11,7 +11,7 @@
   </tr>
   {% for video in videos %}
   <tr>
-    <td>{{video.streamer}}</td>
+    <td>{{video.streamer_object.streamer_name}}</td>
     <td>{{video.race.event_name}}</td>
     <td>{{video.race.event_datetime}}</td>
     <td>{{video.race.event_datetime|naturaltime}}</td>
