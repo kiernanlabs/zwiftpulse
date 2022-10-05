@@ -146,6 +146,7 @@ class Command(BaseCommand):
                 urls.append(link.get_attribute("href"))
             elif race_objs[0].event_name == "unknown":
                 urls.append(link.get_attribute("href"))
+                logger.info(f"---adding {race_objs[0]} to list of urls due to unknown event_name")
             else:
                 race_cats = RaceCat.objects.filter(race=race_objs[0])
                 if len(race_cats) > 0 and race_cats[0].race_quality == 999 and race_objs[0].hours_ago < 4:

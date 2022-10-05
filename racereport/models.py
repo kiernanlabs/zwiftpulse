@@ -428,59 +428,66 @@ class Narrative(models.Model):
 
         self.save()
 
+class Streamer(models.Model):
+    default_category = models.CharField(max_length=1, default=None, blank=True, null=True)
+    streamer_name = models.CharField(max_length=200)
+    
+    # optional parameters
+    youtube_channel_id = models.CharField(max_length=200, default=None, blank=True, null=True)
+    zwiftpower_url = models.CharField(max_length=200, default=None, blank=True, null=True)
+    zwiftpower_name = models.CharField(max_length=200, default=None, blank=True, null=True)
+
+    def __str__(self):
+        return f"[{self.streamer_name}] : {self.default_category} : {self.youtube_channel_id}"
+
 class VideoManager(models.Manager):
-    def create_video(self, zp_url, stream_url, streamer, commentary, description, title, thumbnail, status, category=None):
-        # try:
-            #expected URL format: https://zwiftpower.com/events.php?zid=3072775
-            event_ID = ""
-            if len(zp_url.split("zid=")) > 1:
-                event_ID = zp_url.split("zid=")[1]
-            
-            logger.debug(f"--attempting to match video to event_id: {event_ID}")
+    def create_video(self, zp_url, stream_url, streamer_object, commentary, description, title, thumbnail, status, category=None):
+        event_ID = ""
+        if len(zp_url.split("zid=")) > 1:
+            event_ID = zp_url.split("zid=")[1]
+        
+        logger.debug(f"--attempting to match video to event_id: {event_ID}")
 
-            race = Race.objects.get_or_create(
-                event_id=event_ID,
-                defaults={'event_datetime': timezone.now(), 'event_name': "unknown"}
-            )[0]
-            
-            result = Video.objects.get_or_create(
-                race=race, 
-                stream_url=stream_url,
-                defaults={'title':title, 'thumbnail':thumbnail, 'zp_url':zp_url, 'category':category, 'streamer':streamer, 'commentary':commentary, 'description':description, 'status':status}
+        race = Race.objects.get_or_create(
+            event_id=event_ID,
+            defaults={'event_datetime': timezone.now(), 'event_name': "unknown"}
+        )[0]
+        
+        result = Video.objects.get_or_create(
+            race=race, 
+            stream_url=stream_url,
+            defaults={'title':title, 'thumbnail':thumbnail, 'zp_url':zp_url, 'category':category, 'streamer':streamer_object, 'commentary':commentary, 'description':description, 'status':status}
+        )
+        video = result[0]
+        if result[1] == False:
+            logger.debug(f"--already found video, updating values")
+            video.title = title
+            video.thumbnail = thumbnail
+            video.zp_url = zp_url
+            video.category = category
+            video.streamer_object = streamer_object
+            video.commentary = commentary
+            video.description = description
+            video.status = status
+            video.race = race
+            video.save()
+
+        if category != None:
+            logger.debug(f"--category {category} found, searching for race_cat")
+            race_cats = RaceCat.objects.filter(
+                race=race,
+                category=category,
             )
-            video = result[0]
-            if result[1] == False:
-                logger.debug(f"--already found video, updating values")
-                video.title = title
-                video.thumbnail = thumbnail
-                video.zp_url = zp_url
-                video.category = category
-                video.streamer = streamer
-                video.commentary = commentary
-                video.description = description
-                video.status = status
-                video.race = race
-                video.save()
+        else: race_cats = RaceCat.objects.filter(race=race)
 
-            if category != None:
-                logger.debug(f"--category {category} found, searching for race_cat")
-                race_cats = RaceCat.objects.filter(
-                    race=race,
-                    category=category,
-                )
-            else: race_cats = RaceCat.objects.filter(race=race)
+        for racecat in race_cats:
+            racecat.has_video = True
+            video.race_cat.add(racecat)
+            racecat.save()
 
-            for racecat in race_cats:
-                racecat.has_video = True
-                video.race_cat.add(racecat)
-                racecat.save()
+        logger.debug(f"--successfully created video: {video}")
+        return video
 
-            logger.debug(f"--successfully created video: {video}")
-            return video
-
-        #except Exception as e:
-        #        logger.info(f"--Failed to create video object:{e}")
-        #        return None
 
 class Video(models.Model):
     race = models.ForeignKey(Race, on_delete=models.CASCADE, default=None, blank=True, null=True)
@@ -494,6 +501,7 @@ class Video(models.Model):
     title = models.CharField(max_length=200, default=None, blank=True, null=True)
     thumbnail = models.CharField(max_length=200, default=None, blank=True, null=True)
     streamer = models.CharField(max_length=200, default=None, blank=True, null=True)
+    streamer_object = models.ForeignKey(Streamer, on_delete=models.CASCADE, default=None, blank=True, null=True)
     description = models.CharField(max_length=200, default=None, blank=True, null=True)
 
     commentary = models.BooleanField(default=False)
@@ -504,7 +512,4 @@ class Video(models.Model):
     def __str__(self):
         return f"[{self.streamer}] : {self.race} : {self.stream_url}"
     
-
-    
-
 

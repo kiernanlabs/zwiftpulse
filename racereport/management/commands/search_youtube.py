@@ -15,7 +15,7 @@ import googleapiclient.discovery
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from racereport.models import Video, Race, RaceCat, RaceResult, Team, ScrapeReport
+from racereport.models import Video, Race, RaceCat, RaceResult, Team, ScrapeReport, Streamer
 
 logger = logging.getLogger('main')
 
@@ -103,7 +103,12 @@ class Command(BaseCommand):
         try:
             stream_url = f"https://www.youtube.com/watch?v={item['id']}"
             logger.debug(f"--attempting to create video: {stream_url}")
-            streamer = item['snippet']['channelTitle']
+            streamer_name = item['snippet']['channelTitle']
+
+            streamer = Streamer.objects.get_or_create(streamer_name=streamer_name,
+                defaults={'youtube_channel_id':item['snippet']['channelId']}
+            )[0]
+
             commentary = False
             description = item['snippet']['description']
             title = item['snippet']['title']
