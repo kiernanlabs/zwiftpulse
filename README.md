@@ -1,15 +1,9 @@
 # zwiftpulse
 What happened today in Zwift racing?
+race.zwiftpulse.com
 
-Zwift Pulse
-* The world
-* Flash narratives
-* Emerging stories
-
-MVP:
-* Scrape data to a file [done]
-* Create django models [done]
-* Import files into Django DB
-* Display top races cards
-* Display Team Summary
-* Scrape running in background 
+v4.0:
+* Data pulled from zwiftpower hourly
+* Structured into weekly performance
+* Narratives created and ranked by interest levels
+* Videos pulled from youtube hourly and mapped to events
