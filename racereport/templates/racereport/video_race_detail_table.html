@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load racereport_tags %}
 
 <table class="table">
   <tr>
@@ -11,7 +12,7 @@
   </tr>
   {% for video in videos %}
   <tr>
-    <td>{{video.streamer_object.streamer_name}}</td>
+    <td><a href="{{'live'|production_url}}/streamer/{{video.streamer_object.streamer_name}}">{{video.streamer_object.streamer_name}}</a></td>
     <td>{{video.race.event_name}}</td>
     <td>{{video.race.event_datetime}}</td>
     <td>{{video.race.event_datetime|naturaltime}}</td>

@@ -141,6 +141,9 @@ class Command(BaseCommand):
         for link in links:
             # only pull new races - unclear if needed
             event_id = self.toEventID(link.get_attribute("href"))
+            logger.debug(f'--Getting event_id for: {link.get_attribute("href")}')
+            if event_id == "": break 
+            
             race_objs = Race.objects.filter(event_id=event_id)
             if len(race_objs) == 0:
                 urls.append(link.get_attribute("href"))

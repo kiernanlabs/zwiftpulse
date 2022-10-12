@@ -9,7 +9,7 @@ from django.views.generic import (
     ListView,
 )
 
-from .models import Race, RaceCat, RaceResult, ScrapeReport, Team, Narrative, Video
+from .models import Race, RaceCat, RaceResult, ScrapeReport, Team, Narrative, Video, Streamer
 import logging
 
 logger = logging.getLogger('main')
@@ -24,6 +24,12 @@ def display_race_single(request, event_id, category):
     videos = Video.objects.filter(race_cat=race_cat)
     context = {'category':None, 'report':'races','racecat':race_cat, 'timeframe':'week', 'videos':videos} 
     return render(request, 'racereport/race_page.html', context)
+
+def display_streamer(request, streamer_name):
+    streamer = Streamer.objects.get(streamer_name=streamer_name)
+    videos = Video.objects.filter(streamer_object=streamer)
+    context = {'category':None, 'report':'streamer', 'streamer':streamer, 'timeframe':'week', 'videos':videos} 
+    return render(request, 'racereport/streamer_page.html', context)
 
 def videos_this_week(request):
     seven_days_ago = timezone.now() - timedelta(days = 7)
