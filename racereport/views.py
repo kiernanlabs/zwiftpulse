@@ -39,7 +39,7 @@ def display_race_single(request, event_id, category):
 
 def display_streamer(request, streamer_name):
     streamer = Streamer.objects.get(streamer_name=streamer_name)
-    videos = Video.objects.filter(streamer_object=streamer)
+    videos = Video.objects.filter(streamer_object=streamer).order_by('-race__event_datetime')
     context = {'category':None, 'report':'streamer', 'streamer':streamer, 'timeframe':'week', 'videos':videos} 
     return render(request, 'racereport/streamer_page.html', context)
 
