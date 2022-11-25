@@ -169,19 +169,23 @@ class Command(BaseCommand):
             driver.get(url)
 
             logger.debug(f'--Getting new URL, current windows open: {len(driver.window_handles)}')
+            
+            try:
+                if len(driver.find_elements(By.XPATH, '//*[@id="login"]/fieldset/div/div[1]/div/a')) > 0: self.login(driver)
+                
+                raceName = driver.find_element(By.XPATH, '//*[@id="header_details"]/div[1]/h3').text
+                raceName = re.sub(r"[^A-Za-z0-9 ]+", "", raceName)
+                raceName = self.toEventID(url) + " " + raceName
+                
+                # expecting <span data-value="1661013900" id="EVENT_DATE">Today 12:45</span>
+                raceTimestamp = driver.find_element(
+                        By.XPATH, '//*[@id="EVENT_DATE"]'
+                    ).get_attribute('data-value')
+                logger.info(f"--{n}:{raceName} - Downloading data")
+            except:
+                logger.debug(f'-- ERROR finding basic details on page, skipping scrape')
+                continue #do next URL
 
-            if len(driver.find_elements(By.XPATH, '//*[@id="login"]/fieldset/div/div[1]/div/a')) > 0: self.login(driver)
-            
-            raceName = driver.find_element(By.XPATH, '//*[@id="header_details"]/div[1]/h3').text
-            raceName = re.sub(r"[^A-Za-z0-9 ]+", "", raceName)
-            raceName = self.toEventID(url) + " " + raceName
-            
-            # expecting <span data-value="1661013900" id="EVENT_DATE">Today 12:45</span>
-            raceTimestamp = driver.find_element(
-                    By.XPATH, '//*[@id="EVENT_DATE"]'
-                ).get_attribute('data-value')
-            logger.info(f"--{n}:{raceName} - Downloading data")
-            
             #Attempt to load the page
             try:
                 _pages_loaded = WebDriverWait(driver, 1).until(
