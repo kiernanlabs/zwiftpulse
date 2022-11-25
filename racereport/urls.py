@@ -50,6 +50,7 @@ urlpatterns = [
     path('top_videos', views.top_videos, name='top_videos'),
     path('videos/week', views.videos_this_week, name='videos_this_week'),
     path('streamer/<str:streamer_name>', views.display_streamer, name='display_streamer'),
+    path('streamer/<str:streamer_name>/update', views.update_streamer, name='update_streamer'),
 
 
     # switching team pages to live (no need to generate)

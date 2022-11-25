@@ -1,13 +1,11 @@
 from nis import cat
 import django_tables2 as tables
 from datetime import datetime, timedelta
-from django.utils import timezone
-from django.shortcuts import render
 from django.db.models import Count, Min, Subquery, OuterRef
-from django.http import HttpResponse
-from django.views.generic import (
-    ListView,
-)
+from django.forms.models import model_to_dict
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.utils import timezone
 
 from .models import Race, RaceCat, RaceResult, ScrapeReport, Team, Narrative, Video, Streamer
 import logging
@@ -17,6 +15,20 @@ logger = logging.getLogger('main')
 def about(request):
     context = {'category':None, 'report':'','timeframe':'week'}
     return render(request, 'racereport/about.html', context)
+
+def update_streamer(request, streamer_name):
+    logger.debug(f'Update streamer POST recieved for {streamer_name}: {request.POST}')
+    
+    streamer = Streamer.objects.get(streamer_name=streamer_name)
+    
+    new_category = request.POST['category']
+    if new_category == '': new_category = None
+    streamer.default_category = new_category
+    
+    streamer.save()
+    logger.debug(f'Updated {streamer_name} category to: {streamer.default_category}')
+
+    return JsonResponse(model_to_dict(streamer))
 
 def display_race_single(request, event_id, category):
     race = Race.objects.get(event_id=event_id)

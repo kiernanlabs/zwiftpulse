@@ -5,6 +5,9 @@
   <tr>
     <th>Streamer</th>
     <th>Event</th>
+    <th>Category</th>
+    <th>Racers</th>
+    <th>Race Quality</th>
     <th>Time</th>
     <th></th>
     <th>Video</th>
@@ -14,6 +17,9 @@
   <tr>
     <td><a href="{{'live'|production_url}}/streamer/{{video.streamer_object.streamer_name}}">{{video.streamer_object.streamer_name}}</a></td>
     <td>{{video.race.event_name}}</td>
+    <td>{{video.race_cats_string}}</td>
+    <td>{{video.race_cats_racers}}</td>
+    <td>{{video.race_cats_race_quality}}</td>
     <td>{{video.race.event_datetime}}</td>
     <td>{{video.race.event_datetime|naturaltime}}</td>
     <td><a href="{{video.stream_url}}">{{video.title}}</a></td>

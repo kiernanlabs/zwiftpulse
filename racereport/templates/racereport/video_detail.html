@@ -1,5 +1,17 @@
+{% load racereport_tags %}
+{% load humanize %}
+
 <div class="card block">
-    
+  <header class="card-header">
+    <p class="card-header-title">
+        {{video.race.event_name}}
+        <br>
+        {{video.race.event_datetime}} ({{video.race.event_datetime|naturaltime}})
+    </p>
+    <span class="card-header-icon">
+        <span class="tag is-rounded {{video.race_cats_string|category_color}}">{{video.race_cats_string}}</span>
+    </span>
+  </header>
     <div class="card-content">
         <div class="media">
             <div class="media-left">

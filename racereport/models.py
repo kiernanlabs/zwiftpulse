@@ -203,6 +203,7 @@ class RaceCat(models.Model):
     
     @property
     def race_quality(self):
+        if self.first == None: return 999
         if self.first.zp_rank_event > 40: return self.first.zp_rank_event
         return 999
     
@@ -442,6 +443,11 @@ class Streamer(models.Model):
 
 class VideoManager(models.Manager):
     def create_video(self, zp_url, stream_url, streamer_object, commentary, description, title, thumbnail, status, category=None):
+    
+        if category == None and streamer_object.default_category:
+            logger.debug(f"--streamer {streamer_object} has a default category of: [{streamer_object.default_category}]")
+            category = streamer_object.default_category
+    
         event_ID = ""
         if len(zp_url.split("zid=")) > 1:
             event_ID = zp_url.split("zid=")[1]
@@ -452,7 +458,7 @@ class VideoManager(models.Manager):
             event_id=event_ID,
             defaults={'event_datetime': timezone.now(), 'event_name': "unknown"}
         )[0]
-        
+
         result = Video.objects.get_or_create(
             race=race, 
             stream_url=stream_url,
@@ -472,17 +478,23 @@ class VideoManager(models.Manager):
             video.race = race
             video.save()
 
+        race_cats = []
+
         if category != None:
             logger.debug(f"--category {category} found, searching for race_cat")
-            race_cats = RaceCat.objects.filter(
+            race_cat = RaceCat.objects.get_or_create(
                 race=race,
                 category=category,
-            )
+                defaults={'has_video': True}
+            )[0]
+            race_cats.append(race_cat)
+
         else: race_cats = RaceCat.objects.filter(race=race)
 
         for racecat in race_cats:
             racecat.has_video = True
             video.race_cat.add(racecat)
+            logger.debug(f"--racecat: {racecat} added")
             racecat.save()
 
         logger.debug(f"--successfully created video: {video}")
@@ -509,7 +521,28 @@ class Video(models.Model):
     
     objects = VideoManager()
 
+    @property
+    def race_cats_string(self):
+        race_cats = self.race_cat.all()
+        if len(race_cats) == 0: return ""
+        if len(race_cats) == 1: return f"{race_cats[0].category}"
+        if len(race_cats) > 1: return ""        
+
+    @property
+    def race_cats_racers(self):
+        race_cats = self.race_cat.all()
+        if len(race_cats) == 0: return ""
+        if len(race_cats) == 1: return f"{race_cats[0].num_racers}"
+        if len(race_cats) > 1: return ""
+
+    @property
+    def race_cats_race_quality(self):
+        race_cats = self.race_cat.all()
+        if len(race_cats) == 0: return ""
+        if len(race_cats) == 1: return f"{race_cats[0].race_quality}"
+        if len(race_cats) > 1: return ""        
+    
     def __str__(self):
-        return f"[{self.streamer}] : {self.race} : {self.stream_url}"
+        return f"[{self.streamer_object}] : {self.race} : {self.stream_url}"
     
 
